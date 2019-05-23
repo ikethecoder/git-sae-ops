@@ -232,14 +232,14 @@ class GitlabAPI():
         fork = project.forks.create({'namespace': aGroupName})
         return fork.id
 
-    def create_hook(self, url):
+    def create_hook(self, url, token = None):
         print('{0:30} {1}'.format('create_hook', url))
         hooks = self.gl.hooks.list()
         for hook in hooks:
             if hook.url == url:
                 return
         print('{0:30} {1} CREATED'.format('', url))
-        hook = self.gl.hooks.create({'url': url})
+        hook = self.gl.hooks.create({'url': url, 'token': token, 'enable_ssl_verification': False, 'merge_requests_events': True, 'repository_update_events': True})
 
     def add_file (self, aProjectId, branch, fileName, fileContents):
         print('{0:30} Add file:{1} in branch {2} file:{3}'.format('add_file', aProjectId, branch, fileName))

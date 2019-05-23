@@ -37,6 +37,8 @@ parser.add_argument('command')
 #                    help='gitlab host')
 parser.add_argument('--project', 
                     help='research project')
+parser.add_argument('--token',
+                    help='token')
 parser.add_argument('--repo',
                     help='repository')
 parser.add_argument('--importUrl',
@@ -358,7 +360,10 @@ elif command == 'init' and args.destroy == False:
     glapi.create_get_group(OCWA_CHECKPOINT)
     glapi.create_get_group(OUTPUTCHECKERS)
 
-    glapi.create_hook(args.hook)
+    token = None
+    if 'token' in args:
+        token = args.token
+    glapi.create_hook(args.hook, token)
 
 
 elif command == 'external-project' and args.destroy == False:

@@ -153,3 +153,17 @@ Typically performed by an output checker in Gitlab.
     --repo ikethecoder-external-test-repo \
     cancel-export
 ```
+
+
+### Initial Setup
+
+```
+./bin/glclic \
+    --hook "http://projectsc_group_sync:8080/api/gitlab/webhook" \
+    init
+
+./bin/glclic \
+    --hook "http://projectsc_git_sae_ops:4000/v1/flow/webhook" \
+    --token ""
+    init
+```
