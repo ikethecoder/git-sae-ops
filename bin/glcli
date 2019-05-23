@@ -1,0 +1,7 @@
+#!/bin/bash
+
+export TOKEN=`cat ~/.token`
+export PROJECTSC_HOST="projectscstg.popdata.bc.ca"
+
+python3 main.py $@
+
