@@ -23,6 +23,7 @@ def gitlab_webhook() -> object:
     Takes a gitlab webhook event and processes the event
     """
     data = request.get_json()
+    print("---")
     print(data)
-    print(data['id'])
+    print("---")
     return json.dumps(request.get_json()), HTTPStatus.OK
