@@ -101,11 +101,9 @@ class GitAPI():
         repo = self.cloned_repo
         files = []
         for untracked in repo.untracked_files:
-            print(untracked)
             files.append(untracked)
 
         for item in repo.index.diff(None):
-            print(item.a_path)
             files.append(item.a_path)
 
         print(files)

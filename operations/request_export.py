@@ -14,6 +14,7 @@ class RequestExport():
         glapi = GitlabAPI(self.projectsc_host, self.projectsc_token)
 
         checkpoint = glapi.create_get_group("ocwa-checkpoint")
+        cpRepo = glapi.get_project(checkpoint, repoName)
 
         self.init_pri_branch(repoName, branch)
 
@@ -25,28 +26,17 @@ class RequestExport():
         # Source (SRE)
         sreShares = glapi.create_get_group("sre-shares")
         glRepo = glapi.get_project(sreShares, repoName)
-        teamForkedRepo = glRepo.id
 
-        repoUrl = glRepo.http_url_to_repo
-
-        sgit = GitAPI(repoUrl, self.projectsc_token)
+        sgit = GitAPI(glRepo.http_url_to_repo, self.projectsc_token)
         sgit.info()
         sgit.checkout(branch)
         commitRef = sgit.head_commit()
 
-        cpRepo = glapi.get_project(checkpoint, repoName)
-
         # Target (Temporary outgoing branch based on the prepped branch)
-        #cpRepoUrl = cpRepo.http_url_to_repo
-        #tgit = GitAPI(shareRepoUrl, self.projectsc_token)
-        #tgit.checkout("%s" % branch)
-
         tgit = GitAPI(cpRepo.http_url_to_repo, self.projectsc_token)
+        tgit.info()
         tgit.checkout("%s" % branch)
         tgit.checkout_new("%s-outgoing" % branch)
-
-        #tgit.checkout_new("%s-outgoing" % branch)
-        tgit.info()
         tgit.set_user(self.git_user['username'], self.git_user['email'])
 
         # Do a full copy from source to target
@@ -62,6 +52,8 @@ class RequestExport():
 
         # ciYaml = 'scanjob:\n   script: ocwa-scanner\n'
         # glapi.add_file(shareRepoId, "%s-outgoing" % branch, '.gitlab-ci.yml', ciYaml)
+
+        glapi.set_custom_attribute (cpRepo.id, 'external_url', importUrl)
 
         glapi.create_get_merge_request (cpRepo.id, "Export Request (%s)" % commitRef.hexsha[0:7], "%s-outgoing" % branch, "%s" % branch, None, ['ocwa-export'])
 

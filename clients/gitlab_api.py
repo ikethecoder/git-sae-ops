@@ -41,6 +41,18 @@ class GitlabAPI():
         project = self.gl.projects.create({'name':aProject, 'path':aProject, 'namespace_id':aNamespaceId, 'import_url':aUrl})
         return project.id
 
+    def set_custom_attribute (self, aProjectId, key, value):
+        print('{0:30} {1} : {2} = {3}'.format('set_custom_attribute', aProjectId, key, value))
+
+        project = self.gl.projects.get(aProjectId)
+        project.customattributes.set(key, value)
+
+    def get_custom_attribute (self, aProjectId, key):
+        print('{0:30} {1} : {2}'.format('get_custom_attribute', aProjectId, key))
+        project = self.gl.projects.get(aProjectId)
+        value = project.customattributes.get(key)
+        print('{0:30} {1} : {2} = {3}'.format('', aProjectId, key, value))
+        return value
 
     def config_project_variant1(self, aProjectId):
         print('{0:30} {1} : {2}'.format('config_project', aProjectId, "jobs_enabled"))

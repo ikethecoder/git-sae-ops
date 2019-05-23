@@ -15,9 +15,14 @@ class PushChanges():
 
         checkpoint = glapi.create_get_group("ocwa-checkpoint")
 
+        cpRepo = glapi.get_project(checkpoint, repoName)
+
         if glapi.has_branch (checkpoint, repoName, branch) == False:
             raise Exception("Push to external rejected.  Branch '%s' not found." % branch)
 
+        if importUrl is None:
+            importUrl = glapi.get_custom_attribute(cpRepo.id, 'external_url')
+            
         # Source
         publicRepoUrl = glapi.get_project(checkpoint, repoName).http_url_to_repo
         sgit = GitAPI(publicRepoUrl, self.projectsc_token)
@@ -43,7 +48,7 @@ class PushChanges():
         else: 
             print("-- No changes so no commit and push performed")
 
-        glapi.delete_branch(glapi.get_project(checkpoint, repoName).id, "%s-outgoing" % branch)
+        glapi.delete_branch(cpRepo.id, "%s-outgoing" % branch)
 
     def push_to_sae (self, repoName, branch):
         glapi = GitlabAPI(self.projectsc_host, self.projectsc_token)

@@ -33,6 +33,7 @@ class FileUtils():
                 elif os.path.isdir(srcname):
                     self.copytree(srcname, dstname, symlinks, ignore)
                 else:
+                    # print("Copying %s to %s" % (srcname, dstname))
                     shutil.copy2(srcname, dstname)
                 # XXX What about devices, sockets etc.?
             except (IOError, os.error) as why:
