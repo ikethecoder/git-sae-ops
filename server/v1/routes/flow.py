@@ -22,14 +22,14 @@ def gitlab_webhook() -> object:
     """
     Takes a gitlab webhook event and processes the event
     """
-    config = Config()
+    conf = Config().data
 
     data = request.get_json()
     print("---")
     print(data)
     print("---")
 
-    if data['event_type'] == "merge_request" and data['project']['namespace'] == config.data('checkpointGroup'):
+    if data['event_type'] == "merge_request" and data['project']['namespace'] == conf.get('checkpointGroup'):
         print("Merge Request for a checkpoint project detected: %s" % data['project']['name'])
 
     return jsonify(status="ok"), HTTPStatus.OK
