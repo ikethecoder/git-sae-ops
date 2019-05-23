@@ -50,9 +50,9 @@ class GitlabAPI():
     def get_custom_attribute (self, aProjectId, key):
         print('{0:30} {1} : {2}'.format('get_custom_attribute', aProjectId, key))
         project = self.gl.projects.get(aProjectId)
-        value = project.customattributes.get(key)
-        print('{0:30} {1} : {2} = {3}'.format('', aProjectId, key, value))
-        return value
+        attr = project.customattributes.get(key)
+        print('{0:30} {1} : {2} = {3}'.format('', aProjectId, key, attr.value))
+        return attr.value
 
     def config_project_variant1(self, aProjectId):
         print('{0:30} {1} : {2}'.format('config_project', aProjectId, "jobs_enabled"))
