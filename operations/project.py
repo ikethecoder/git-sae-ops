@@ -20,16 +20,16 @@ class ProjectOp():
         # Create the corresponding internal group
         sharedGroup = glapi.create_get_group("sre-shares")
         teamGroup = glapi.create_get_group("%s" % saeProjectName)
-        teamForkedRepo = glapi.create_get_project(sharedGroup, repoName)
-        glapi.config_project_variant3(teamForkedRepo)
+        glrepo = glapi.create_get_project(sharedGroup, repoName)
+        glapi.config_project_variant3(glrepo)
 
         # glapi.unprotect_branch(teamForkedRepo, 'master')
         
         glapi.share_project(publicRepo, ocGroup, gitlab.MAINTAINER_ACCESS)
         # glapi.share_project(publicRepo, teamGroup, gitlab.GUEST_ACCESS)
 
-        glapi.share_project(teamForkedRepo, ocGroup, gitlab.REPORTER_ACCESS)
-        glapi.share_project(teamForkedRepo, teamGroup, gitlab.DEVELOPER_ACCESS)
+        glapi.share_project(glrepo, ocGroup, gitlab.REPORTER_ACCESS)
+        glapi.share_project(glrepo, teamGroup, gitlab.DEVELOPER_ACCESS)
 
         glapi.create_get_branch(public, repoName, "private")
         glapi.set_default_branch(public, repoName, "private")
@@ -38,5 +38,5 @@ class ProjectOp():
 
         glapi.create_get_branch(sharedGroup, repoName, "develop")
         glapi.set_default_branch(sharedGroup, repoName, "develop")
-        glapi.unprotect_branch(teamForkedRepo, "develop")
-        glapi.delete_branch(teamForkedRepo, "master")
+        glapi.unprotect_branch(glrepo, "develop")
+        glapi.delete_branch(glrepo, "master")

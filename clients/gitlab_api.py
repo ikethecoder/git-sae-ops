@@ -16,13 +16,15 @@ class GitlabAPI():
         groups = self.gl.groups.list(search=aGroup)
         for group in groups:
             if group.name == aGroup:
+                print('{0:30} {1} id:{2}'.format('', aGroup, group.id))
                 return group.id
         print('{0:30} {1} CREATING'.format('', aGroup))
         group = self.gl.groups.create({'name':aGroup, 'path':aGroup, 'visibility':'private'})
+        print('{0:30} {1} id:{2}'.format('', aGroup, group.id))
         return group.id
 
     def create_get_project(self, aNamespaceId, aProject):
-        print('{0:30} {1}'.format('create_get_project', aProject))
+        print('{0:30} {1} in group:{2}'.format('create_get_project', aProject, aNamespaceId))
         projects = self.gl.projects.list(search=aProject)
         for project in projects:
             if project.name == aProject and project.namespace['id'] == aNamespaceId:
