@@ -1,6 +1,6 @@
 {
     "apiPort"  : 4000,
-    "logLevel" : "info",
+    "logLevel" : "debug",
     "apiSecret" : "s3cr3t",
 
     "checkpointGroup" : "ocwa-checkpoint",

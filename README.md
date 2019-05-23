@@ -72,6 +72,15 @@ Called when a Researcher is ready to export files from the SAE.
     request-export
 ```
 
+OR 
+
+```
+./bin/glclic \
+    --branch master \
+    --external_url https://github.com/ikethecoder/external-test-repo.git \
+    request-export
+```
+
 
 ### Approve the export merge request
 

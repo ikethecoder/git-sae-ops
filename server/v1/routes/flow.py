@@ -27,32 +27,37 @@ def gitlab_webhook() -> object:
     conf = Config().data
 
     data = request.get_json()
-    print("---")
-    print(data)
-    print("---")
+    log.debug("---")
+    log.debug(data)
+    log.debug("---")
 
     if "object_kind" in data and data['object_kind'] == "merge_request" and data['project']['namespace'] == conf.get('checkpointGroup'):
-        print("Merge Request for a checkpoint project detected: %s" % data['repository']['name'])
+        log.info("Merge Request for a checkpoint project detected: %s" % data['repository']['name'])
         if data['object_attributes']['state'] == 'merged':
-            print("-- MR Merged - initiate mirroring")
+            log.debug("-- MR Merged - initiate mirroring")
             source = data['object_attributes']['source_branch']
             target = data['object_attributes']['target_branch']
-            print("%s --> %s" % (source,target))
+            log.debug("%s --> %s" % (source,target))
 
             if source.endswith('-outgoing'):
                 repoName = data['repository']['name']
-                print("push_to_external (%s, %s, %s)" % (repoName, None, target))
+                log.debug("push_to_external (%s, %s, %s)" % (repoName, None, target))
                 PushChanges(conf).push_to_external(repoName, None, target)
 
             elif source.endswith('-incoming'):
                 repoName = data['repository']['name']
-                print("push_to_sae (%s, %s, %s)" % (repoName, importUrl, target))
+                log.debug("push_to_sae (%s, %s, %s)" % (repoName, importUrl, target))
                 PushChanges(conf).push_to_sae(repoName, target)
             else:
-                print("ERR: Unexpected source branch %s" % source)
+                log.debug("ERR: Unexpected source branch %s" % source)
         else:
-            print("-- MR Ignored - state %s" % data['object_attributes']['state'])
+            log.debug("-- MR Ignored - state %s" % data['object_attributes']['state'])
+        log.info("Successful Mirror")
+    elif "event_name" in data
+        log.info("Skipping event NAME: %s" % data['event_name'])
+    elif "event_type" in data
+        log.info("Skipping event TYPE: %s" % data['event_type'])
     else:
-        print("Skipping event")
+        log.info("Skipping event")
 
     return jsonify(status="ok"), HTTPStatus.OK
