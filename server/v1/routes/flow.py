@@ -33,8 +33,8 @@ def gitlab_webhook() -> object:
 
     if data['object_kind'] == "merge_request" and data['project']['namespace'] == conf.get('checkpointGroup'):
         print("Merge Request for a checkpoint project detected: %s" % data['repository']['name'])
-        if data['object_attributes']['state'] == 'closed':
-            print("-- MR Closed - initiate mirroring")
+        if data['object_attributes']['state'] == 'merged':
+            print("-- MR Merged - initiate mirroring")
             source = data['object_attributes']['source_branch']
             target = data['object_attributes']['target_branch']
             print("%s --> %s" % (source,target))
