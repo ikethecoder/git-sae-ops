@@ -14,6 +14,8 @@ def auth(f):
 
         if config.data['apiSecret'] == request.headers.get('x-api-key'):
             return f(*args, **kwargs)
+        elif config.data['apiSecret'] == request.headers.get('x-gitlab-token'):
+            return f(*args, **kwargs)
         else:
             print("Unauthorized address trying to use API: " + request.remote_addr)
             abort(401)
