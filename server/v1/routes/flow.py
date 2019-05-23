@@ -31,7 +31,9 @@ def gitlab_webhook() -> object:
     print(data)
     print("---")
 
-    if data['object_kind'] == "merge_request" and data['project']['namespace'] == conf.get('checkpointGroup'):
+    if data['event_type'] == "merge_request" 
+            and data['object_kind'] == "merge_request" 
+            and data['project']['namespace'] == conf.get('checkpointGroup'):
         print("Merge Request for a checkpoint project detected: %s" % data['repository']['name'])
         if data['object_attributes']['state'] == 'merged':
             print("-- MR Merged - initiate mirroring")
@@ -52,5 +54,7 @@ def gitlab_webhook() -> object:
                 print("ERR: Unexpected source branch %s" % source)
         else:
             print("-- MR Ignored - state %s" % data['object_attributes']['state'])
+    else:
+        print("Skipping event - %s" % data['event_type'])
 
     return jsonify(status="ok"), HTTPStatus.OK

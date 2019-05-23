@@ -41,8 +41,8 @@ parser.add_argument('--token',
                     help='token')
 parser.add_argument('--repo',
                     help='repository')
-parser.add_argument('--importUrl',
-                    help='importUrl')
+parser.add_argument('--external_url',
+                    help='external_url')
 parser.add_argument('--branch',
                     help='branch')
 parser.add_argument('--team', 
@@ -74,12 +74,12 @@ if command == 'hello' and args.destroy == False:
 
 elif command == 'project' and args.destroy == False:
     # glcli --project 99-t05 --repo geekcomputers project
-    # glcli --project 99-t05 --importUrl https://github.com/ikethecoder/popdata-infra.git project
+    # glcli --project 99-t05 --external_url https://github.com/ikethecoder/popdata-infra.git project
 
     saeProjectName = args.project
     repo = args.repo
-    if args.importUrl is not None:
-        o = urlparse(args.importUrl)
+    if args.external_url is not None:
+        o = urlparse(args.external_url)
         parts = o.path.split('/')
         repo = "%s-%s" % (parts[1], parts[2])
         repo = repo[0:-4].lower()
@@ -89,20 +89,20 @@ elif command == 'project' and args.destroy == False:
 
 
 elif command == 'request-export' and args.destroy == False:
-    # glcli --branch master --importUrl https://github.com/ikethecoder/topbar.git request-export
+    # glcli --branch master --external_url https://github.com/ikethecoder/topbar.git request-export
 
     branch = args.branch
-    importUrl = args.importUrl
+    external_url = args.external_url
     repo = args.repo
 
-    if args.importUrl is not None:
-        o = urlparse(importUrl)
+    if args.external_url is not None:
+        o = urlparse(external_url)
         parts = o.path.split('/')
         repo = "%s-%s" % (parts[1], parts[2])
         repo = repo[0:-4].lower()
         print ("New repo %s" % repo)
 
-    RequestExport(config).run(repo, importUrl, branch)
+    RequestExport(config).run(repo, external_url, branch)
 
 elif command == 'approve-export-merge' and args.destroy == False:
 
@@ -112,31 +112,33 @@ elif command == 'approve-export-merge' and args.destroy == False:
     Merge(config).approve_export_mr(repo, branch)
 
 elif command == 'push-to-external' and args.destroy == False:
-    # glcli --branch develop --repo ikethecoder-topbar --importUrl https://github.com/ikethecoder/topbar.git push-export-changes
+    # glcli --branch develop --repo ikethecoder-topbar --external_url https://github.com/ikethecoder/topbar.git push-export-changes
 
     proj = args.project
     branch = args.branch
-    importUrl = args.importUrl
+    external_url = None
+    if args.external_url is not None:
+        external_url = args.external_url
     repo = "%s-repo" % proj # args.repo
     if args.repo is not None:
        repo = args.repo
 
-    PushChanges(config).push_to_external (repo, importUrl, branch)
+    PushChanges(config).push_to_external (repo, external_url, branch)
 
 elif command == 'request-import' and args.destroy == False:
 
-    # glcli --branch develop --importUrl https://github.com/ikethecoder/topbar.git project-import
+    # glcli --branch develop --external_url https://github.com/ikethecoder/topbar.git project-import
     proj = args.project
     branch = args.branch
-    importUrl = args.importUrl
+    external_url = args.external_url
 
-    o = urlparse(args.importUrl)
+    o = urlparse(args.external_url)
     parts = o.path.split('/')
     repo = "%s-%s" % (parts[1], parts[2])
     repo = repo[0:-4].lower()
     print ("New repo %s" % repo)
 
-    RequestImport(config).run(repo, importUrl, branch)
+    RequestImport(config).run(repo, external_url, branch)
 
 elif command == 'approve-import-merge' and args.destroy == False:
 
@@ -146,7 +148,7 @@ elif command == 'approve-import-merge' and args.destroy == False:
     Merge(config).approve_import_mr(repo, branch)
 
 elif command == 'push-to-sae' and args.destroy == False:
-    # glcli --branch develop --repo ikethecoder-topbar --importUrl https://github.com/ikethecoder/topbar.git push-export-changes
+    # glcli --branch develop --repo ikethecoder-topbar --external_url https://github.com/ikethecoder/topbar.git push-export-changes
 
     proj = args.project
     branch = args.branch
@@ -176,16 +178,16 @@ elif command == 'cancel-import' and args.destroy == False:
 
 
 # elif command == 'project-export' and args.destroy == False:
-#     # glcli --branch develop --repo ikethecoder-topbar --importUrl https://github.com/ikethecoder/topbar.git project-export
+#     # glcli --branch develop --repo ikethecoder-topbar --external_url https://github.com/ikethecoder/topbar.git project-export
 #     proj = args.project
 #     branch = args.branch
-#     importUrl = args.importUrl
+#     external_url = args.external_url
 
 #     repo = "%s-repo" % proj # args.repo
 #     if args.repo is not None:
 #        repo = args.repo
 
-#     # o = urlparse(args.importUrl)
+#     # o = urlparse(args.external_url)
 #     # parts = o.path.split('/')
 #     # trepo = "%s-%s" % (parts[1], parts[2])
 #     # trepo = trepo[0:-4].lower()
@@ -218,7 +220,7 @@ elif command == 'cancel-import' and args.destroy == False:
 
 #     # : Pull changes from remote to tgit <branch>-incoming
 #     # : Push new <branch>-incoming to origin
-#     #commitRef = tgit.pull_from_remote(branch, "%s-outgoing" % branch, importUrl)
+#     #commitRef = tgit.pull_from_remote(branch, "%s-outgoing" % branch, external_url)
 #     #newBranch = tgit.push_to_origin("%s-outgoing" % branch)
 
 #     glapi.create_get_merge_request (publicRepo, "Export Request", "%s-outgoing" % branch, "%s-mirror" % branch, None, ['ocwa-export'])
@@ -229,12 +231,12 @@ elif command == 'cancel-import' and args.destroy == False:
 
 elif command == 'project-import-merged_NOT_USED' and args.destroy == False:
 
-    # glcli --branch develop --importUrl https://github.com/ikethecoder/topbar.git project-import
+    # glcli --branch develop --external_url https://github.com/ikethecoder/topbar.git project-import
     proj = args.project
     branch = args.branch
-    importUrl = args.importUrl
+    external_url = args.external_url
 
-    o = urlparse(args.importUrl)
+    o = urlparse(args.external_url)
     parts = o.path.split('/')
     repo = "%s-%s" % (parts[1], parts[2])
     repo = repo[0:-4].lower()
@@ -256,7 +258,7 @@ elif command == 'project-import-merged_NOT_USED' and args.destroy == False:
 
     # : Pull changes from remote to tgit <branch>-incoming
     # : Push new <branch>-incoming to origin
-    commitRef = tgit.pull_from_remote(branch, "%s-incoming" % branch, importUrl)
+    commitRef = tgit.pull_from_remote(branch, "%s-incoming" % branch, external_url)
     newBranch = tgit.push_to_origin("%s-incoming" % branch)
 
     # : Create a merge request in the public repo from <branch>-incoming to <branch>
@@ -278,20 +280,20 @@ elif command == 'project-import-merged_NOT_USED' and args.destroy == False:
 
 
 elif command == 'prepare-repo-for-import' and args.destroy == False:
-    # glcli --branch develop --importUrl https://github.com/ikethecoder/topbar.git prepare-repo-for-import
+    # glcli --branch develop --external_url https://github.com/ikethecoder/topbar.git prepare-repo-for-import
 
     proj = args.project
     branch = args.branch
-    importUrl = args.importUrl
+    external_url = args.external_url
 
-    o = urlparse(importUrl)
+    o = urlparse(external_url)
     parts = o.path.split('/')
     repo = "%s-%s" % (parts[1], parts[2])
     repo = repo[0:-4].lower()
     print ("New repo %s" % repo)
 
     # Source
-    sgit = GitAPI(importUrl, GITHUB_TOKEN)
+    sgit = GitAPI(external_url, GITHUB_TOKEN)
     commitRef = sgit.checkout(branch)
     sgit.info()
 

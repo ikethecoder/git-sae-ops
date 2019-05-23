@@ -44,11 +44,11 @@ Create a new repository in the SAE shares group and a corresponding one in the c
 ```
 ./bin/glclic \
     --project project-A \
-    --importUrl https://github.com/ikethecoder/external-test-repo.git \
+    --external_url https://github.com/ikethecoder/external-test-repo.git \
     project
 ```
 
-OR 
+OR
 
 ```
 ./bin/glclic \
@@ -68,7 +68,7 @@ Called when a Researcher is ready to export files from the SAE.
 ./bin/glclic \
     --branch master \
     --repo ikethecoder-external-test-repo \
-    --importUrl https://github.com/ikethecoder/external-test-repo.git \
+    --external_url https://github.com/ikethecoder/external-test-repo.git \
     request-export
 ```
 
@@ -91,7 +91,16 @@ Typically performed by an output checker in Gitlab.
 ./bin/glclic \
     --branch master \
     --repo ikethecoder-external-test-repo \
-    --importUrl https://github.com/ikethecoder/external-test-repo.git \
+    --external_url https://github.com/ikethecoder/external-test-repo.git \
+    push-to-external
+```
+
+OR (the external_url is taken from a custom attribute set when 'request-export' is executed)
+
+```
+./bin/glclic \
+    --branch master \
+    --repo ikethecoder-external-test-repo \
     push-to-external
 ```
 
@@ -105,7 +114,7 @@ Called when a Researcher is ready to import files into the SAE.
 ```
 ./bin/glclic \
     --branch master \
-    --importUrl https://github.com/ikethecoder/external-test-repo.git \
+    --external_url https://github.com/ikethecoder/external-test-repo.git \
     request-import
 ```
 
