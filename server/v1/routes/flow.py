@@ -47,7 +47,7 @@ def gitlab_webhook() -> object:
 
             elif source.endswith('-incoming'):
                 repoName = data['repository']['name']
-                log.debug("push_to_sae (%s, %s, %s)" % (repoName, importUrl, target))
+                log.debug("push_to_sae (%s, %s)" % (repoName, target))
                 PushChanges(conf).push_to_sae(repoName, target)
                 log.info("Successful push_to_sae mirror")
             else:
