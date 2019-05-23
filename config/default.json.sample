@@ -3,6 +3,8 @@
     "logLevel" : "info",
     "apiSecret" : "s3cr3t",
 
+    "checkpointGroup" : "ocwa-checkpoint",
+
     "projectsc" : { 
         "host" : "", 
         "token" : "" 
