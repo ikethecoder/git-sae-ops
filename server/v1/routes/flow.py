@@ -43,16 +43,17 @@ def gitlab_webhook() -> object:
                 repoName = data['repository']['name']
                 log.debug("push_to_external (%s, %s, %s)" % (repoName, None, target))
                 PushChanges(conf).push_to_external(repoName, None, target)
+                log.info("Successful push_to_external mirror")
 
             elif source.endswith('-incoming'):
                 repoName = data['repository']['name']
                 log.debug("push_to_sae (%s, %s, %s)" % (repoName, importUrl, target))
                 PushChanges(conf).push_to_sae(repoName, target)
+                log.info("Successful push_to_sae mirror")
             else:
                 log.debug("ERR: Unexpected source branch %s" % source)
         else:
             log.debug("-- MR Ignored - state %s" % data['object_attributes']['state'])
-        log.info("Successful Mirror")
     elif "event_name" in data:
         log.info("Skipping event NAME: %s" % data['event_name'])
     elif "event_type" in data:
