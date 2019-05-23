@@ -26,4 +26,5 @@ def gitlab_webhook() -> object:
     print("---")
     print(data)
     print("---")
+    print(request)
     return json.dumps(request.get_json()), HTTPStatus.OK
