@@ -1,0 +1,20 @@
+{
+    "apiPort"  : 4000,
+    "logLevel" : "info",
+    "apiSecret" : "s3cr3t",
+
+    "projectsc" : { 
+        "host" : "", 
+        "token" : "" 
+    },
+
+    "github": { 
+        "token" : "" 
+    },
+
+    "git_user": { 
+        "username" : "", 
+        "email" : "" 
+    }
+
+}

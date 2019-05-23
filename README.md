@@ -10,7 +10,7 @@ docker build --tag git-sae-ops .
 ```
 
 
-## Running
+## Command Line
 
 ```
 export GITHUB_TOKEN=""
@@ -25,6 +25,18 @@ bin/glclic hello
 
 ```
 
+## Server
+
+```
+docker run --rm -ti \
+  -p 4000:4000 \
+  -e PROJECTSC_TOKEN -e PROJECTSC_HOST \
+  -e GITHUB_TOKEN \
+  -e GIT_USER_USERNAME -e GIT_USER_EMAIL \
+  -v `pwd`/config/default.json:/app/config/default.json \
+  git-sae-ops
+
+```
 
 # Commands
 

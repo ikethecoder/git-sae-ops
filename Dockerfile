@@ -14,4 +14,4 @@ COPY . .
 
 COPY files/gitconfig /root/.gitconfig
 
-ENTRYPOINT ["python", "cli.py"]
+ENTRYPOINT ["python", "wsgi.py"]

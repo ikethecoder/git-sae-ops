@@ -1,7 +1,8 @@
 #!/bin/bash
 
 docker run --rm -ti \
+  --entrypoint "python" \
   -e PROJECTSC_TOKEN -e PROJECTSC_HOST \
   -e GITHUB_TOKEN \
   -e GIT_USER_USERNAME -e GIT_USER_EMAIL \
-  git-sae-ops $@
+  git-sae-ops cli.py $@
