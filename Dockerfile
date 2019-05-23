@@ -14,4 +14,6 @@ COPY . .
 
 COPY files/gitconfig /root/.gitconfig
 
+EXPOSE 4000
+
 ENTRYPOINT ["python", "wsgi.py"]
