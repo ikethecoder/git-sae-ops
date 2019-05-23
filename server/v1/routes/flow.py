@@ -53,9 +53,9 @@ def gitlab_webhook() -> object:
         else:
             log.debug("-- MR Ignored - state %s" % data['object_attributes']['state'])
         log.info("Successful Mirror")
-    elif "event_name" in data
+    elif "event_name" in data:
         log.info("Skipping event NAME: %s" % data['event_name'])
-    elif "event_type" in data
+    elif "event_type" in data:
         log.info("Skipping event TYPE: %s" % data['event_type'])
     else:
         log.info("Skipping event")
