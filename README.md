@@ -66,7 +66,7 @@ Called when a Researcher is ready to export files from the SAE.
 
 ```
 ./bin/glclic \
-    --branch master \
+    --branch develop \
     --repo ikethecoder-external-test-repo \
     --external_url https://github.com/ikethecoder/external-test-repo.git \
     request-export
@@ -76,7 +76,7 @@ OR
 
 ```
 ./bin/glclic \
-    --branch master \
+    --branch develop \
     --external_url https://github.com/ikethecoder/external-test-repo.git \
     request-export
 ```
@@ -88,7 +88,7 @@ Typically performed by an output checker in Gitlab.
 
 ```
 ./bin/glclic \
-    --branch master \
+    --branch develop \
     --repo ikethecoder-external-test-repo \
     approve-export-merge
 
@@ -98,7 +98,7 @@ Typically performed by an output checker in Gitlab.
 
 ```
 ./bin/glclic \
-    --branch master \
+    --branch develop \
     --repo ikethecoder-external-test-repo \
     --external_url https://github.com/ikethecoder/external-test-repo.git \
     push-to-external
@@ -108,7 +108,7 @@ OR (the external_url is taken from a custom attribute set when 'request-export' 
 
 ```
 ./bin/glclic \
-    --branch master \
+    --branch develop \
     --repo ikethecoder-external-test-repo \
     push-to-external
 ```
@@ -122,7 +122,7 @@ Called when a Researcher is ready to import files into the SAE.
 
 ```
 ./bin/glclic \
-    --branch master \
+    --branch develop \
     --external_url https://github.com/ikethecoder/external-test-repo.git \
     request-import
 ```
@@ -133,7 +133,7 @@ Typically performed by an output checker in Gitlab.
 
 ```
 ./bin/glclic \
-    --branch master \
+    --branch develop \
     --repo ikethecoder-external-test-repo \
     approve-import-merge
 
@@ -143,7 +143,7 @@ Typically performed by an output checker in Gitlab.
 
 ```
 ./bin/glclic \
-    --branch master \
+    --branch develop \
     --repo ikethecoder-external-test-repo \
     push-to-sae
 ```
@@ -155,7 +155,7 @@ Typically performed by an output checker in Gitlab.
 
 ```
 ./bin/glclic \
-    --branch master \
+    --branch develop \
     --repo ikethecoder-external-test-repo \
     cancel-import
 ```
@@ -164,7 +164,7 @@ Typically performed by an output checker in Gitlab.
 
 ```
 ./bin/glclic \
-    --branch master \
+    --branch develop \
     --repo ikethecoder-external-test-repo \
     cancel-export
 ```
