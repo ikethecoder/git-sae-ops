@@ -39,6 +39,15 @@ docker run --rm -ti \
 
 ## Onboard project
 
+At a minimum, add an SRE project as a group:
+
+```
+./bin/glclic \
+    --project project-A \
+    project
+```
+
+
 Create a new repository in the SAE shares group and a corresponding one in the checkpoint group, and grant access to the appropriate groups.
 
 ```

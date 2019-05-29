@@ -54,31 +54,6 @@ class RequestImport():
 
         glapi.create_get_merge_request (cpRepoId, "Import Request (%s)" % commitRef.hexsha[0:7], "%s-incoming" % branch, "%s" % branch, None, ['ocwa-import'])
 
-    # def prep_checkpoint_from_internal (self, repoName, branch, to_branch, token = None):
-    #     glapi = GitlabAPI(self.projectsc_host, self.projectsc_token)
-
-    #     # Pull latest from sre repo into the checkpoint branch
-    #     sre = glapi.create_get_group("sre-shares")
-    #     sreRepoUrl = glapi.get_project(sre, repoName).http_url_to_repo
-
-    #     cp = glapi.create_get_group("ocwa-checkpoint")
-
-    #     cpRepo = glapi.get_project(cp, repoName)
-
-    #     cpRepoUrl = cpRepo.http_url_to_repo
-    #     tgit = GitAPI(cpRepoUrl, self.projectsc_token)
-    #     tgit.info()
-
-    #     commitRef = tgit.pull_from_remote(branch, to_branch, sreRepoUrl, token)
-
-    #     with open("%s/.gitlab-ci.yml" % tgit.dir(), 'w') as the_file:
-    #         the_file.write('scanjob:\n   script: ocwa-scanner\n')
-
-    #     tgit.commit(to_branch, 'ocwa pipeline')
-    #     # tgit.push_to_origin(to_branch)
-
-    #     return tgit
-
     def prep_projectsc_repo (self, url, branch):
 
         git = GitAPI(url, self.projectsc_token)

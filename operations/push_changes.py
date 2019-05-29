@@ -22,7 +22,7 @@ class PushChanges():
 
         if importUrl is None:
             importUrl = glapi.get_custom_attribute(cpRepo.id, 'external_url')
-            
+
         # Source
         publicRepoUrl = glapi.get_project(checkpoint, repoName).http_url_to_repo
         sgit = GitAPI(publicRepoUrl, self.projectsc_token)
@@ -61,7 +61,7 @@ class PushChanges():
         sgit.info()
 
         # Target
-        shares = glapi.create_get_group("sre-shares")
+        shares = glapi.create_get_group("shares")
         sreRepoUrl = glapi.get_project(shares, repoName).http_url_to_repo
         tgit = GitAPI(sreRepoUrl, self.projectsc_token)
         if tgit.has_branch(branch):

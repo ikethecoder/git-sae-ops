@@ -7,6 +7,7 @@ import os
 import base64
 from urllib.parse import urlparse
 from operations.project import ProjectOp
+from operations.repo import RepoOp
 from operations.hello import Hello
 from operations.request_export import RequestExport
 from operations.request_import import RequestImport
@@ -67,12 +68,12 @@ config = {
     "git_user": { "username" : os.environ.get("GIT_USER_USERNAME") , "email" : os.environ.get("GIT_USER_EMAIL") }
 }
 
-
 if command == 'hello' and args.destroy == False:
 
     Hello().run()
 
 elif command == 'project' and args.destroy == False:
+    # glcli --project 99-t05 project
     # glcli --project 99-t05 --repo geekcomputers project
     # glcli --project 99-t05 --external_url https://github.com/ikethecoder/popdata-infra.git project
 
@@ -85,8 +86,10 @@ elif command == 'project' and args.destroy == False:
         repo = repo[0:-4].lower()
         print ("New repo %s" % repo)
 
-    ProjectOp(glapi).run(saeProjectName, repo)
-
+    if repo is None:
+        ProjectOp(glapi).run(saeProjectName)
+    else:
+        RepoOp(glapi).run(saeProjectName, repo)
 
 elif command == 'request-export' and args.destroy == False:
     # glcli --branch master --external_url https://github.com/ikethecoder/topbar.git request-export
@@ -177,184 +180,6 @@ elif command == 'cancel-import' and args.destroy == False:
     Cancel(config).cancel_import (repo, branch)
 
 
-# elif command == 'project-export' and args.destroy == False:
-#     # glcli --branch develop --repo ikethecoder-topbar --external_url https://github.com/ikethecoder/topbar.git project-export
-#     proj = args.project
-#     branch = args.branch
-#     external_url = args.external_url
-
-#     repo = "%s-repo" % proj # args.repo
-#     if args.repo is not None:
-#        repo = args.repo
-
-#     # o = urlparse(args.external_url)
-#     # parts = o.path.split('/')
-#     # trepo = "%s-%s" % (parts[1], parts[2])
-#     # trepo = trepo[0:-4].lower()
-#     # print ("New repo %s" % trepo)
-
-#     # Create a merge request from the project to the 'public'
-#     # Outputchecker reviews the change, and once accepted
-
-#     # Output: http://gitlab.example.demo/99-t05/pythonstuff.git
-#     # Branch: master
-#     # : Create this branch under dip-public project, if not already there
-#     # : creates a merge request from this branch to a branch on the outside world
-
-#     public = glapi.create_get_group("ocwa-checkpoint")
-#     publicRepo = glapi.create_get_project(public, repo)
-
-#     sharedGroup = glapi.create_get_group("sre-shares")
-#     teamForkedRepo = glapi.create_get_fork(publicRepo, "sre-shares")
-#     # glapi.create_get_branch(sharedGroup, repo, "develop")
-#     # glapi.set_default_branch(sharedGroup, repo, "develop")
-#     # glapi.protect_branch(teamForkedRepo, 'master')
-
-#     #glapi.create_get_branch(public, repo, "%s-outgoing" % branch)
-
-#     publicRepoUrl = glapi.get_project(public, repo).http_url_to_repo
-
-#     tgit = GitAPI(publicRepoUrl, TOKEN)
-#     tgit.info()
-#     # commitRef = tgit.checkout_new("%s-outgoing" % branch)
-
-#     # : Pull changes from remote to tgit <branch>-incoming
-#     # : Push new <branch>-incoming to origin
-#     #commitRef = tgit.pull_from_remote(branch, "%s-outgoing" % branch, external_url)
-#     #newBranch = tgit.push_to_origin("%s-outgoing" % branch)
-
-#     glapi.create_get_merge_request (publicRepo, "Export Request", "%s-outgoing" % branch, "%s-mirror" % branch, None, ['ocwa-export'])
-
-
-
-    
-
-elif command == 'project-import-merged_NOT_USED' and args.destroy == False:
-
-    # glcli --branch develop --external_url https://github.com/ikethecoder/topbar.git project-import
-    proj = args.project
-    branch = args.branch
-    external_url = args.external_url
-
-    o = urlparse(args.external_url)
-    parts = o.path.split('/')
-    repo = "%s-%s" % (parts[1], parts[2])
-    repo = repo[0:-4].lower()
-    print ("New repo %s" % repo)
-
-    # Have a 'public' group
-    public = glapi.create_get_group("ocwa-checkpoint")
-    publicRepo = glapi.create_get_project(public, repo)
-
-    # Get the corresponding internal group
-    sharedGroup = glapi.create_get_group("sre-shares")
-    glRepo = glapi.get_project(sharedGroup, repo)
-    teamForkedRepo = glRepo.id
-
-    publicRepoUrl = glapi.get_project(public, repo).http_url_to_repo
-
-    tgit = GitAPI(publicRepoUrl, TOKEN)
-    tgit.info()
-
-    # : Pull changes from remote to tgit <branch>-incoming
-    # : Push new <branch>-incoming to origin
-    commitRef = tgit.pull_from_remote(branch, "%s-incoming" % branch, external_url)
-    newBranch = tgit.push_to_origin("%s-incoming" % branch)
-
-    # : Create a merge request in the public repo from <branch>-incoming to <branch>
-    glapi.create_get_branch(public, repo, branch)
-    glapi.create_get_branch(sharedGroup, repo, branch)
-
-    ciYaml = 'scanjob:\n   script: ocwa-scanner\n'
-    glapi.add_file(publicRepo, newBranch, '.gitlab-ci.yml', ciYaml)
-
-    glapi.create_get_merge_request (publicRepo, "Import Request (%s)" % commitRef.hexsha[0:7], newBranch, branch, None, ['ocwa-import'])
-
-    # : Merge request reviewed by outputchecker
-    #   be merged by the outputchecker into the real <branch>.
-    #   Scanning has to pass.
-
-    # : Once that real branch is merged, then new merge requests are created for each Fork
-
-
-
-
-elif command == 'prepare-repo-for-import' and args.destroy == False:
-    # glcli --branch develop --external_url https://github.com/ikethecoder/topbar.git prepare-repo-for-import
-
-    proj = args.project
-    branch = args.branch
-    external_url = args.external_url
-
-    o = urlparse(external_url)
-    parts = o.path.split('/')
-    repo = "%s-%s" % (parts[1], parts[2])
-    repo = repo[0:-4].lower()
-    print ("New repo %s" % repo)
-
-    # Source
-    sgit = GitAPI(external_url, GITHUB_TOKEN)
-    commitRef = sgit.checkout(branch)
-    sgit.info()
-
-    # Target
-    share = glapi.create_get_group("ocwa-checkpoint")
-    shareRepoUrl = glapi.get_project(share, repo).http_url_to_repo
-    tgit = GitAPI(shareRepoUrl, TOKEN)
-    tgit.checkout_new("%s-incoming" % branch)
-    tgit.info()
-    tgit.set_user(GIT_USER_USERNAME, GIT_USER_EMAIL)
-
-    # Do a full copy from source to target
-    fileutils = FileUtils()
-    fileutils.copytree (sgit.dir(), tgit.dir())
-
-    # Commit the changes to the target repo
-    tgit.commit_and_push("%s-incoming" % branch, "OCWA import repo (%s)" % commitRef.hexsha[0:7])
-
-elif command == 'push-import-changes' and args.destroy == False:
-    # glcli --branch develop --repo ikethecoder-topbar push-import-changes
-
-    proj = args.project
-    branch = args.branch
-    repo = "%s-repo" % proj # args.repo
-    if args.repo is not None:
-       repo = args.repo
-
-    # Takes two repository locations (source and target)
-    # Clones the two repositories
-    # Sets the right branch
-    # Copies actual files over to the target
-    # Prepare files for commit
-    # Push to the target location
-    #
-
-    # Source
-    public = glapi.create_get_group("ocwa-checkpoint")
-    publicRepoUrl = glapi.get_project(public, repo).http_url_to_repo
-    sgit = GitAPI(publicRepoUrl, TOKEN)
-    commitRef = sgit.checkout(branch)
-    sgit.info()
-
-    # Target
-    share = glapi.create_get_group("sre-shares")
-    shareRepoUrl = glapi.get_project(share, repo).http_url_to_repo
-    tgit = GitAPI(shareRepoUrl, TOKEN)
-    tgit.checkout(branch)
-    tgit.info()
-    tgit.set_user(GIT_USER_USERNAME, GIT_USER_EMAIL)
-
-    # Do a full copy from source to target
-    fileutils = FileUtils()
-    fileutils.copytree (sgit.dir(), tgit.dir())
-
-    # Commit the changes to the target repo
-    tgit.commit_and_push(branch, "OCWA import (%s)" % commitRef.hexsha[0:7])
-
-    glapi.delete_branch(glapi.get_project(public, repo).id, "%s-incoming" % branch)
-
-
-
 elif command == 'init' and args.destroy == False:
 
     glapi.update_root_create_groups()
@@ -367,21 +192,5 @@ elif command == 'init' and args.destroy == False:
         token = args.token
     glapi.create_hook(args.hook, token)
 
-
-elif command == 'external-project' and args.destroy == False:
-
-    # In the case of an external project, gitlab CE does not support PULL, 
-    # so it is not able to pull from external sources
-    # TO emulate it, some custom code would need to be created that 
-    # would perform the mirror (git clone, add external remote, pull, etc)
-    # .. and then submit the changes back to an external project, which
-    # would then go through normal 'input checker' flow.
-    #
-    print('not implemented!')
-
 else:
     raise Exception("Invalid command %s (destroy=%s)" % (command, args.destroy))
-
-
-# for item in gl.search('issues', search_str, as_list=False):
-#     do_something(item)

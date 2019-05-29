@@ -24,7 +24,7 @@ class RequestExport():
         #tgit = self.prep_checkpoint_from_external(repoName, importUrl, branch, branch, self.github_token)
 
         # Source (SRE)
-        sreShares = glapi.create_get_group("sre-shares")
+        sreShares = glapi.create_get_group("shares")
         glRepo = glapi.get_project(sreShares, repoName)
 
         sgit = GitAPI(glRepo.http_url_to_repo, self.projectsc_token)
