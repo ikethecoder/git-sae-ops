@@ -2,6 +2,7 @@
 import os
 import shutil
 from shutil import Error
+from pathlib import Path
 
 class FileUtils():
 
@@ -50,3 +51,22 @@ class FileUtils():
             raise Error(errors)
 
 
+    def sync_deletions(self, source, target):
+
+        for root, dirs, files in os.walk(target + "/"):
+            relpath = root[len(target)+1:]
+            path = relpath.split(os.sep)
+            if (path[0] == '.git'):
+                continue
+
+            src_path = "%s/%s" % (source, relpath)
+            if (Path(src_path).is_dir() == False):
+                tar_path = "%s/%s" % (target, relpath)
+                shutil.rmtree(tar_path)
+                continue
+
+            for file in files:
+                src_path = "%s/%s/%s" % (source, relpath, file)
+                if (Path(src_path).is_file() == False):
+                    tar_path = "%s/%s/%s" % (target, relpath, file)
+                    os.remove(tar_path)

@@ -42,15 +42,13 @@ class RequestImport():
         # Do a full copy from source to target
         fileutils = FileUtils()
         fileutils.copytree (sgit.dir(), tgit.dir())
+        fileutils.sync_deletions (sgit.dir(), tgit.dir())
 
         if len(tgit.has_changes()) == 0:
             print("-- Exiting.  No changes to import.")
             return
 
         tgit.commit_and_push("%s-incoming" % branch, "Merged external changes (%s)" % commitRef.hexsha[0:7])
-
-        # ciYaml = 'scanjob:\n   script: ocwa-scanner\n'
-        # glapi.add_file(cpRepoId, "%s-incoming" % branch, '.gitlab-ci.yml', ciYaml)
 
         glapi.create_get_merge_request (cpRepoId, "Import Request (%s)" % commitRef.hexsha[0:7], "%s-incoming" % branch, "%s" % branch, None, ['ocwa-import'])
 
@@ -61,15 +59,12 @@ class RequestImport():
         git.checkout(branch)
         return git
 
-
-
     def prep_external_repo (self, url, branch):
 
         git = GitAPI(url, self.github_token)
         git.info()
         git.checkout(branch)
         return git
-
 
     def init_pri_branch (self, repoName, branch):
         glapi = GitlabAPI(self.projectsc_host, self.projectsc_token)

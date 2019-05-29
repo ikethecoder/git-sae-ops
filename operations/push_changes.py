@@ -2,6 +2,7 @@ import os
 from clients.git_api import GitAPI
 from clients.file_api import FileUtils
 from clients.gitlab_api import GitlabAPI
+from dirsync import sync
 
 class PushChanges():
     def __init__(self, config):
@@ -41,6 +42,7 @@ class PushChanges():
         # Do a full copy from source to target
         fileutils = FileUtils()
         fileutils.copytree (sgit.dir(), tgit.dir())
+        fileutils.sync_deletions (sgit.dir(), tgit.dir())
 
         if len(tgit.has_changes()) > 0:
             # Commit the changes to the target repo
@@ -77,6 +79,7 @@ class PushChanges():
         # Do a full copy from source to target
         fileutils = FileUtils()
         fileutils.copytree (sgit.dir(), tgit.dir())
+        fileutils.sync_deletions (sgit.dir(), tgit.dir())
 
         if len(tgit.has_changes()) > 0:
             # Commit the changes to the target repo
