@@ -9,3 +9,4 @@ class ProjectOp():
         glapi = self.glapi
 
         glapi.create_get_group(saeProjectName)
+

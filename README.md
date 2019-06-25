@@ -66,6 +66,8 @@ OR
     project
 ```
 
+For repositories that are going to be private (exclusive to one SRE project), include the "--private" flag.  This will enable Issues as well as enforcing only one group associated with repo.
+
 
 ## Export Files
 

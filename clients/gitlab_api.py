@@ -72,7 +72,7 @@ class GitlabAPI():
         project.save()
 
     def config_project_variant2(self, aProjectId):
-        print('{0:30} {1} : {2}'.format('config_project', aProjectId, "jobs_enabled,issues_enabled,wiki_enabled"))
+        print('{0:30} {1} : {2}'.format('config_project', aProjectId, "jobs_enabled,issues_disabled,wiki_disabled"))
         project = self.gl.projects.get(aProjectId)
         if project.jobs_enabled == False:
             project.jobs_enabled = True
@@ -87,13 +87,27 @@ class GitlabAPI():
         # project.auto_devops_attributes = { enabled : False }
         project.save()
 
-    def config_project_variant3(self, aProjectId):
-        print('{0:30} {1} : {2}'.format('config_project', aProjectId, "jobs_enabled"))
+    def config_project_variant_shared(self, aProjectId):
+        print('{0:30} {1} : {2}'.format('config_project', aProjectId, "jobs_enabled,issued_disabled,wiki_disabled"))
         project = self.gl.projects.get(aProjectId)
         project.jobs_enabled = False
         project.repository_enabled = True
         project.issues_enabled = False
         project.wiki_enabled = False
+        project.snippets_enabled = False
+        project.public_jobs = False
+        project.lfs_enabled = False
+        project.only_allow_merge_if_pipeline_succeeds = False
+        project.only_allow_merge_if_all_discussions_are_resolved = False
+        project.save()
+
+    def config_project_variant_private(self, aProjectId):
+        print('{0:30} {1} : {2}'.format('config_project', aProjectId, "jobs_enabled,issued_enabled,wiki_enabled"))
+        project = self.gl.projects.get(aProjectId)
+        project.jobs_enabled = False
+        project.repository_enabled = True
+        project.issues_enabled = True
+        project.wiki_enabled = True
         project.snippets_enabled = False
         project.public_jobs = False
         project.lfs_enabled = False
@@ -230,6 +244,15 @@ class GitlabAPI():
                 return
             else:
                 raise error
+
+
+    def get_project_shares(self, aProjectId):
+        print('{0:30} Get project shares for:{1}'.format('get_project_shares', aProjectId))
+        project = self.gl.projects.get(aProjectId)
+        try:
+            return project.shared_with_groups
+        except gitlab.exceptions.GitlabCreateError as error:
+            raise error
 
 
     def create_get_fork(self, aProjectId, aGroupName):

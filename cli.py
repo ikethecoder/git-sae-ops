@@ -40,6 +40,8 @@ parser.add_argument('--project',
                     help='research project')
 parser.add_argument('--token',
                     help='token')
+parser.add_argument('--private',  default=False, action='store_true',
+                    help='make the repository private so Issues are enabled')
 parser.add_argument('--repo',
                     help='repository')
 parser.add_argument('--external_url',
@@ -84,12 +86,12 @@ elif command == 'project' and args.destroy == False:
         parts = o.path.split('/')
         repo = "%s-%s" % (parts[1], parts[2])
         repo = repo[0:-4].lower()
-        print ("New repo %s" % repo)
+        print ("New repo %s : private? %s" % (repo, args.private))
 
     if repo is None:
         ProjectOp(glapi).run(saeProjectName)
     else:
-        RepoOp(glapi).run(saeProjectName, repo)
+        RepoOp(glapi).run(saeProjectName, repo, args.private)
 
 elif command == 'request-export' and args.destroy == False:
     # glcli --branch master --external_url https://github.com/ikethecoder/topbar.git request-export
