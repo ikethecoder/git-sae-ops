@@ -46,14 +46,20 @@ def create_request() -> object:
     if direction == 'export':
         try:
             mr = RequestExport(conf).run(repo, externalRepository, branch)
-            return jsonify(status="ok",location=mr.web_url,title=mr.title), HTTPStatus.OK
+            if mr is None:
+                return jsonify(status="no_changes"), HTTPStatus.OK
+            else:
+                return jsonify(status="ok",location=mr.web_url,title=mr.title), HTTPStatus.OK
         except BaseException as error:
             return jsonify(status="error",message=("%s" % error)), HTTPStatus.BAD_REQUEST
 
     elif direction == 'import':
         try:
             mr = RequestImport(conf).run(repo, externalRepository, branch)
-            return jsonify(status="ok",location=mr.web_url,title=mr.title), HTTPStatus.OK
+            if mr is None:
+                return jsonify(status="no_changes"), HTTPStatus.OK
+            else:
+                return jsonify(status="ok",location=mr.web_url,title=mr.title), HTTPStatus.OK
         except BaseException as error:
             return jsonify(status="error",message=("%s" % error)), HTTPStatus.BAD_REQUEST
 

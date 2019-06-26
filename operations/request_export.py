@@ -46,7 +46,7 @@ class RequestExport():
 
         if len(tgit.has_changes()) == 0:
             print("-- Exiting.  No changes to export.")
-            return
+            return None
 
         # tgit.commit_and_push("%s" % branch, "Merged sae changes (%s)" % commitRef.hexsha[0:7])
         tgit.commit_and_push("%s-outgoing" % branch, "Merged sae changes (%s)" % commitRef.hexsha[0:7])

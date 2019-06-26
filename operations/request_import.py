@@ -46,7 +46,7 @@ class RequestImport():
 
         if len(tgit.has_changes()) == 0:
             print("-- Exiting.  No changes to import.")
-            return
+            return None
 
         tgit.commit_and_push("%s-incoming" % branch, "Merged external changes (%s)" % commitRef.hexsha[0:7])
 
