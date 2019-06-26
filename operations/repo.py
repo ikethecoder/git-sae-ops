@@ -16,14 +16,13 @@ class RepoOp():
 
         publicRepo = glapi.create_get_project(public, repoName)
         glapi.config_project_variant2(publicRepo)
+        glapi.share_project(publicRepo, ocGroup, gitlab.DEVELOPER_ACCESS)
 
         # Create the corresponding internal group
         sharedGroup = glapi.create_get_group("shares")
         teamGroup = glapi.create_get_group("%s" % saeProjectName)
         glrepo = glapi.create_get_project(sharedGroup, repoName)
         
-        glapi.share_project(publicRepo, ocGroup, gitlab.MAINTAINER_ACCESS)
-
         if private:
             self.do_private_repo_validation(glrepo, saeProjectName)
             glapi.config_project_variant_private(glrepo)

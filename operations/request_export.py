@@ -18,8 +18,8 @@ class RequestExport():
 
         self.init_pri_branch(repoName, branch)
 
-        if glapi.has_branch (checkpoint, repoName, "%s-incoming" % branch):
-            raise Exception("Import request rejected.  Branch '%s' already exists." % ("%s-incoming" % branch))
+        if glapi.has_branch (checkpoint, repoName, "%s-outgoing" % branch):
+            raise Exception("Export request rejected.  Branch '%s' already exists." % ("%s-outgoing" % branch))
 
         #tgit = self.prep_checkpoint_from_external(repoName, importUrl, branch, branch, self.github_token)
 
@@ -56,7 +56,7 @@ class RequestExport():
 
         glapi.set_custom_attribute (cpRepo.id, 'external_url', importUrl)
 
-        glapi.create_get_merge_request (cpRepo.id, "Export Request (%s)" % commitRef.hexsha[0:7], "%s-outgoing" % branch, "%s" % branch, None, ['ocwa-export'])
+        return glapi.create_get_merge_request (cpRepo.id, "Export Request (%s)" % commitRef.hexsha[0:7], "%s-outgoing" % branch, "%s" % branch, None, ['ocwa-export'])
 
 
     def prep_checkpoint_from_external (self, repoName, url, branch, to_branch, token = None):

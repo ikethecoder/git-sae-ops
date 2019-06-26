@@ -50,7 +50,7 @@ class RequestImport():
 
         tgit.commit_and_push("%s-incoming" % branch, "Merged external changes (%s)" % commitRef.hexsha[0:7])
 
-        glapi.create_get_merge_request (cpRepoId, "Import Request (%s)" % commitRef.hexsha[0:7], "%s-incoming" % branch, "%s" % branch, None, ['ocwa-import'])
+        return glapi.create_get_merge_request (cpRepoId, "Import Request (%s)" % commitRef.hexsha[0:7], "%s-incoming" % branch, "%s" % branch, None, ['ocwa-import'])
 
     def prep_projectsc_repo (self, url, branch):
 
