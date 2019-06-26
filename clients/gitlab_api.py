@@ -82,7 +82,7 @@ class GitlabAPI():
         project.snippets_enabled = False
         project.public_jobs = False
         project.lfs_enabled = False
-        project.only_allow_merge_if_pipeline_succeeds = False
+        project.only_allow_merge_if_pipeline_succeeds = True
         project.only_allow_merge_if_all_discussions_are_resolved = True
         # project.auto_devops_attributes = { enabled : False }
         project.save()
@@ -211,7 +211,7 @@ class GitlabAPI():
         for project in projects:
             if project.name == aProject and project.namespace['id'] == aNamespaceId:
                 return project
-        raise Exception("Project %s in %s not found" % (aProject, aNamespaceId))
+        raise Exception("Project %s not found (ns=%s)" % (aProject, aNamespaceId))
 
     def protect_branch(self, aProjectId, branch):
         print('{0:30} branch:{1} for project:{2}'.format('protect_branch', branch, aProjectId))
