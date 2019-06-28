@@ -130,7 +130,7 @@ class GitlabAPI():
             if (err.response_code == 405):
                 raise Exception("Merge request can not be merged.  Check that the MR has met all required criteria.")
             else:
-                raise err
+                raise Exception("Unexpected error from Gitlab")
 
     def delete_merge (self, mr):
 
