@@ -51,13 +51,16 @@ class FileUtils():
             raise Error(errors)
 
 
-    def sync_deletions(self, source, target):
+    # Delete files/directories in target that are not in source
+    def sync_deletions(self, source, target, ignored_names=[]):
 
         for root, dirs, files in os.walk(target + "/"):
             relpath = root[len(target)+1:]
             path = relpath.split(os.sep)
             if (path[0] == '.git'):
                 continue
+
+            print(path)
 
             src_path = "%s/%s" % (source, relpath)
             if (Path(src_path).is_dir() == False):
@@ -66,6 +69,10 @@ class FileUtils():
                 continue
 
             for file in files:
+                print("%s/%s" % (relpath, file))
+                if "%s/%s" % (relpath, file) in ignored_names:
+                    continue
+
                 src_path = "%s/%s/%s" % (source, relpath, file)
                 if (Path(src_path).is_file() == False):
                     tar_path = "%s/%s/%s" % (target, relpath, file)

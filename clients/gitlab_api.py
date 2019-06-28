@@ -127,6 +127,13 @@ class GitlabAPI():
 
         mr.delete()
 
+    def close_merge (self, mr):
+
+        print('{0:30} id={1} [{2}] {3}'.format('close_merge', mr.id, mr.state, mr.title))
+
+        mr.state_event = 'close'
+        mr.save()
+
     def get_merge_request(self, aProjectId, sourceBranch, targetBranch, targetProjectId, labels):
         print('{0:30} {1} {2} --> {3}'.format('get_merge_request', aProjectId, sourceBranch, targetBranch))
 
@@ -138,6 +145,7 @@ class GitlabAPI():
         project = self.gl.projects.get(aProjectId)
         mrs = project.mergerequests.list()
         for mr in mrs:
+            # print('{0:30} Merge Request? {1} {2} {3}'.format('', mr.source_branch, mr.target_branch, mr.state))
             if mr.source_branch == sourceBranch and mr.target_branch == targetBranch and (mr.state != 'closed' and mr.state != 'merged'):
                 return mr
 
@@ -238,6 +246,12 @@ class GitlabAPI():
         print('{0:30} Access project:{1} by group:{2} with access:{3}'.format('share_project', aProjectId, aGroupId, access))
         project = self.gl.projects.get(aProjectId)
         try:
+            for s in project.shared_with_groups:
+                if (s['group_id'] == aGroupId and s['group_access_level'] != access):
+                    print('{0:30} Access project:{1} by group:{2} - doing unshare then share.'.format('share_project', aProjectId, aGroupId))
+
+                    project.unshare(aGroupId)
+                
             project.share(aGroupId, access)
         except gitlab.exceptions.GitlabCreateError as error:
             if error.response_code == 409:

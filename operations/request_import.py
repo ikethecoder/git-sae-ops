@@ -42,7 +42,7 @@ class RequestImport():
         # Do a full copy from source to target
         fileutils = FileUtils()
         fileutils.copytree (sgit.dir(), tgit.dir())
-        fileutils.sync_deletions (sgit.dir(), tgit.dir())
+        fileutils.sync_deletions (sgit.dir(), tgit.dir(), ["/.gitlab-ci.yml"])
 
         if len(tgit.has_changes()) == 0:
             print("-- Exiting.  No changes to import.")

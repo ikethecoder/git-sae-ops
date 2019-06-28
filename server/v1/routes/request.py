@@ -14,6 +14,7 @@ from operations.request_import import RequestImport
 from operations.request_export import RequestExport
 from operations.merge import Merge
 from operations.cancel import Cancel
+from operations.close import Close
 from clients.repo_utils import RepoUtils
 
 import logging
@@ -65,12 +66,12 @@ def create_request() -> object:
 
     abort(Response("The 'direction' must be 'import' or 'export'", 400))
 
-@requestApi.route('/close',
+@requestApi.route('/delete',
            methods=['PUT'], strict_slashes=False)
 @auth
-def close_request() -> object:
+def delete_request() -> object:
     """
-    Closes a merge request
+    Delete a merge request
     """
     conf = Config().data
 
@@ -102,6 +103,45 @@ def close_request() -> object:
         abort(Response("The 'direction' must be 'import' or 'export'", 400))
 
     return jsonify(status="ok"), HTTPStatus.OK
+
+@requestApi.route('/close',
+           methods=['PUT'], strict_slashes=False)
+@auth
+def close_request() -> object:
+    """
+    Closes a merge request
+    """
+    conf = Config().data
+
+    data = request.get_json()
+    log.debug("---")
+    log.debug(data)
+    log.debug("---")
+
+    direction = data['direction']
+
+    repository = data['repository']
+    branch = data['branch']
+
+    repo = RepoUtils().get_repo_name(repository)
+
+    if direction == 'export':
+        try:
+            Close(conf).close_export(repo, branch)
+        except BaseException as error:
+            return jsonify(status="error",message=("%s" % error)), HTTPStatus.BAD_REQUEST
+
+    elif direction == 'import':
+        try:
+            Close(conf).close_import(repo, branch)
+        except BaseException as error:
+            return jsonify(status="error",message=("%s" % error)), HTTPStatus.BAD_REQUEST
+
+    else:
+        abort(Response("The 'direction' must be 'import' or 'export'", 400))
+
+    return jsonify(status="ok"), HTTPStatus.OK
+
 
 @requestApi.route('/merge',
            methods=['PUT'], strict_slashes=False)
