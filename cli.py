@@ -5,6 +5,7 @@ from clients.gitlab_api import GitlabAPI
 from clients.file_api import FileUtils
 import os
 import base64
+import logging
 from urllib.parse import urlparse
 from operations.project import ProjectOp
 from operations.repo import RepoOp
@@ -29,6 +30,11 @@ CROSS_PROJECT_CHECKER = "oc"
 OCWA_CHECKPOINT = "ocwa-checkpoint"
 
 CROSS_PROJECT_GROUP = ""
+
+log = logging.getLogger(__name__)
+
+logging.basicConfig(level='INFO',
+                    format='%(asctime)s - %(levelname)s - %(message)s')
 
 parser = argparse.ArgumentParser(description='SRE Project Management')
 

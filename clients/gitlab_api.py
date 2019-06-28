@@ -1,63 +1,66 @@
 import gitlab
 
+import logging
+log = logging.getLogger(__name__)
+
 class GitlabAPI():
     def __init__(self, host, token):
         self.gl = gitlab.Gitlab(host, private_token=token)
 
     def update_root_create_groups(self):
-        print('{0:30}'.format('update_root_create_groups'))
+        log.info('{0:30}'.format('update_root_create_groups'))
 
         user = self.gl.users.list(username='root')[0]
         user.can_create_group = 1 
         user.save()
 
     def create_get_group(self, aGroup):
-        print('{0:30} {1}'.format('create_get_group', aGroup))
+        log.info('{0:30} {1}'.format('create_get_group', aGroup))
         groups = self.gl.groups.list(search=aGroup)
         for group in groups:
             if group.name == aGroup:
-                print('{0:30} {1} id:{2}'.format('', aGroup, group.id))
+                log.info('{0:30} {1} id:{2}'.format('', aGroup, group.id))
                 return group.id
-        print('{0:30} {1} CREATING'.format('', aGroup))
+        log.info('{0:30} {1} CREATING'.format('', aGroup))
         group = self.gl.groups.create({'name':aGroup, 'path':aGroup, 'visibility':'private'})
-        print('{0:30} {1} id:{2}'.format('', aGroup, group.id))
+        log.info('{0:30} {1} id:{2}'.format('', aGroup, group.id))
         return group.id
 
     def create_get_project(self, aNamespaceId, aProject):
-        print('{0:30} {1} in group:{2}'.format('create_get_project', aProject, aNamespaceId))
+        log.info('{0:30} {1} in group:{2}'.format('create_get_project', aProject, aNamespaceId))
         projects = self.gl.projects.list(search=aProject)
         for project in projects:
             if project.name == aProject and project.namespace['id'] == aNamespaceId:
                 return project.id
-        print('{0:30} {1} CREATING'.format('', aProject))
+        log.info('{0:30} {1} CREATING'.format('', aProject))
         project = self.gl.projects.create({'name':aProject, 'namespace_id':aNamespaceId, 'initialize_with_readme':False})
         return project.id
 
     def import_get_project(self, aNamespaceId, aProject, aUrl):
-        print('{0:30} {1} URL {2}'.format('import_get_project', aProject, aUrl))
+        log.info('{0:30} {1} URL {2}'.format('import_get_project', aProject, aUrl))
         projects = self.gl.projects.list(search=aProject)
         for project in projects:
             if project.name == aProject and project.namespace['id'] == aNamespaceId:
                 return project.id
-        print('{0:30} {1} IMPORTING'.format('', aProject))
+        log.info('{0:30} {1} IMPORTING'.format('', aProject))
         project = self.gl.projects.create({'name':aProject, 'path':aProject, 'namespace_id':aNamespaceId, 'import_url':aUrl})
         return project.id
 
     def set_custom_attribute (self, aProjectId, key, value):
-        print('{0:30} {1} : {2} = {3}'.format('set_custom_attribute', aProjectId, key, value))
+        log.info('{0:30} {1} : {2} = {3}'.format('set_custom_attribute', aProjectId, key, value))
 
         project = self.gl.projects.get(aProjectId)
         project.customattributes.set(key, value)
 
     def get_custom_attribute (self, aProjectId, key):
-        print('{0:30} {1} : {2}'.format('get_custom_attribute', aProjectId, key))
+        log.info('{0:30} {1} : {2}'.format('get_custom_attribute', aProjectId, key))
         project = self.gl.projects.get(aProjectId)
         attr = project.customattributes.get(key)
-        print('{0:30} {1} : {2} = {3}'.format('', aProjectId, key, attr.value))
+        log.info('{0:30} {1} : {2} = {3}'.format('', aProjectId, key, attr.value))
         return attr.value
 
     def config_project_variant1(self, aProjectId):
-        print('{0:30} {1} : {2}'.format('config_project', aProjectId, "jobs_enabled"))
+        log.info('{0:30} {1} : {2}'.format('config_project', aProjectId, "jobs_enabled"))
         project = self.gl.projects.get(aProjectId)
         if project.jobs_enabled == False:
             project.jobs_enabled = True
@@ -72,7 +75,7 @@ class GitlabAPI():
         project.save()
 
     def config_project_variant2(self, aProjectId):
-        print('{0:30} {1} : {2}'.format('config_project', aProjectId, "jobs_enabled,issues_disabled,wiki_disabled"))
+        log.info('{0:30} {1} : {2}'.format('config_project', aProjectId, "jobs_enabled,issues_disabled,wiki_disabled"))
         project = self.gl.projects.get(aProjectId)
         if project.jobs_enabled == False:
             project.jobs_enabled = True
@@ -88,7 +91,7 @@ class GitlabAPI():
         project.save()
 
     def config_project_variant_shared(self, aProjectId):
-        print('{0:30} {1} : {2}'.format('config_project', aProjectId, "jobs_enabled,issued_disabled,wiki_disabled"))
+        log.info('{0:30} {1} : {2}'.format('config_project', aProjectId, "jobs_enabled,issued_disabled,wiki_disabled"))
         project = self.gl.projects.get(aProjectId)
         project.jobs_enabled = False
         project.repository_enabled = True
@@ -102,7 +105,7 @@ class GitlabAPI():
         project.save()
 
     def config_project_variant_private(self, aProjectId):
-        print('{0:30} {1} : {2}'.format('config_project', aProjectId, "jobs_enabled,issued_enabled,wiki_enabled"))
+        log.info('{0:30} {1} : {2}'.format('config_project', aProjectId, "jobs_enabled,issued_enabled,wiki_enabled"))
         project = self.gl.projects.get(aProjectId)
         project.jobs_enabled = False
         project.repository_enabled = True
@@ -117,25 +120,25 @@ class GitlabAPI():
 
     def approve_merge (self, mr):
 
-        print('{0:30} id={1} [{2}] {3}'.format('approve_merge', mr.id, mr.state, mr.title))
+        log.info('{0:30} id={1} [{2}] {3}'.format('approve_merge', mr.id, mr.state, mr.title))
 
         mr.merge()
 
     def delete_merge (self, mr):
 
-        print('{0:30} id={1} [{2}] {3}'.format('delete_merge', mr.id, mr.state, mr.title))
+        log.info('{0:30} id={1} [{2}] {3}'.format('delete_merge', mr.id, mr.state, mr.title))
 
         mr.delete()
 
     def close_merge (self, mr):
 
-        print('{0:30} id={1} [{2}] {3}'.format('close_merge', mr.id, mr.state, mr.title))
+        log.info('{0:30} id={1} [{2}] {3}'.format('close_merge', mr.id, mr.state, mr.title))
 
         mr.state_event = 'close'
         mr.save()
 
     def get_merge_request(self, aProjectId, sourceBranch, targetBranch, targetProjectId, labels):
-        print('{0:30} {1} {2} --> {3}'.format('get_merge_request', aProjectId, sourceBranch, targetBranch))
+        log.info('{0:30} {1} {2} --> {3}'.format('get_merge_request', aProjectId, sourceBranch, targetBranch))
 
         if targetProjectId is not None:
             for mr in self.gl.projects.get(targetProjectId).mergerequests.list():
@@ -145,11 +148,11 @@ class GitlabAPI():
         project = self.gl.projects.get(aProjectId)
         mrs = project.mergerequests.list()
         for mr in mrs:
-            # print('{0:30} Merge Request? {1} {2} {3}'.format('', mr.source_branch, mr.target_branch, mr.state))
+            # log.info('{0:30} Merge Request? {1} {2} {3}'.format('', mr.source_branch, mr.target_branch, mr.state))
             if mr.source_branch == sourceBranch and mr.target_branch == targetBranch and (mr.state != 'closed' and mr.state != 'merged'):
                 return mr
 
-        print('{0:30} {1}'.format('', ': MERGE NOT FOUND'))
+        log.info('{0:30} {1}'.format('', ': MERGE NOT FOUND'))
         return None
 
     def create_get_merge_request(self, aProjectId, title, sourceBranch, targetBranch, targetProjectId, labels):
@@ -160,11 +163,11 @@ class GitlabAPI():
             return mr
 
     def create_merge_request(self, aProjectId, title, sourceBranch, targetBranch, targetProjectId, labels):
-        print('{0:30} {1} {2} : {3} --> {4}'.format('create_merge_request', aProjectId, title, sourceBranch, targetBranch))
+        log.info('{0:30} {1} {2} : {3} --> {4}'.format('create_merge_request', aProjectId, title, sourceBranch, targetBranch))
 
         project = self.gl.projects.get(aProjectId)
 
-        print('{0:30} {1} {2} CREATING'.format('', aProjectId, title))
+        log.info('{0:30} {1} {2} CREATING'.format('', aProjectId, title))
         mr = project.mergerequests.create({'source_branch': sourceBranch,
                                    'target_project_id': targetProjectId,
                                    'target_branch': targetBranch,
@@ -173,7 +176,7 @@ class GitlabAPI():
         return mr
 
     def create_get_branch(self, aNamespaceId, aProject, aBranch, ref = 'master'):
-        print('{0:30} {1} {2}'.format('create_get_branch', aProject, aBranch))
+        log.info('{0:30} {1} {2}'.format('create_get_branch', aProject, aBranch))
         projects = self.gl.projects.list(search=aProject)
         for project in projects:
             if project.name == aProject and project.namespace['id'] == aNamespaceId:
@@ -182,7 +185,7 @@ class GitlabAPI():
                     if branch.name == aBranch:
                         return branch.name
 
-                print('{0:30} {1} CREATING'.format('', aBranch))
+                log.info('{0:30} {1} CREATING'.format('', aBranch))
 
                 create_params = {'branch': aBranch}
                 if ref is not None:
@@ -192,7 +195,7 @@ class GitlabAPI():
         raise Exception("Project %s in %s not found" % (aProject, aNamespaceId))
 
     def set_default_branch(self, aNamespaceId, aProject, aBranch):
-        print('{0:30} {1} {2}'.format('set_default_branch', aProject, aBranch))
+        log.info('{0:30} {1} {2}'.format('set_default_branch', aProject, aBranch))
         projects = self.gl.projects.list(search=aProject)
         for project in projects:
             if project.name == aProject and project.namespace['id'] == aNamespaceId:
@@ -202,7 +205,7 @@ class GitlabAPI():
         raise Exception("Project %s in %s not found" % (aProject, aNamespaceId))
 
     def has_branch (self, aNamespaceId, aProject, aBranch):
-        print('{0:30} {1} {2}'.format('has_branch', aProject, aBranch))
+        log.info('{0:30} {1} {2}'.format('has_branch', aProject, aBranch))
         projects = self.gl.projects.list(search=aProject)
         for project in projects:
             if project.name == aProject and project.namespace['id'] == aNamespaceId:
@@ -214,7 +217,7 @@ class GitlabAPI():
         raise Exception("Project %s in %s not found" % (aProject, aNamespaceId))
 
     def get_project(self, aNamespaceId, aProject):
-        print('{0:30} {1}'.format('get_project', aProject))
+        log.info('{0:30} {1}'.format('get_project', aProject))
         projects = self.gl.projects.list(search=aProject)
         for project in projects:
             if project.name == aProject and project.namespace['id'] == aNamespaceId:
@@ -222,33 +225,33 @@ class GitlabAPI():
         raise Exception("Project %s not found (ns=%s)" % (aProject, aNamespaceId))
 
     def protect_branch(self, aProjectId, branch):
-        print('{0:30} branch:{1} for project:{2}'.format('protect_branch', branch, aProjectId))
+        log.info('{0:30} branch:{1} for project:{2}'.format('protect_branch', branch, aProjectId))
         project = self.gl.projects.get(aProjectId)
         branch = project.branches.get(branch)
         branch.protect()
 
     def delete_branch(self, aProjectId, branch):
-        print('{0:30} branch:{1} for project:{2}'.format('delete_branch', branch, aProjectId))
+        log.info('{0:30} branch:{1} for project:{2}'.format('delete_branch', branch, aProjectId))
         project = self.gl.projects.get(aProjectId)
         branches = project.branches.list()
         for br in branches:
             if br.name == branch:
-                print('{0:30} DELETE {1} for project:{2}'.format('', branch, aProjectId))
+                log.info('{0:30} DELETE {1} for project:{2}'.format('', branch, aProjectId))
                 br.delete()
 
     def unprotect_branch(self, aProjectId, branch):
-        print('{0:30} branch:{1} for project:{2}'.format('unprotect_branch', branch, aProjectId))
+        log.info('{0:30} branch:{1} for project:{2}'.format('unprotect_branch', branch, aProjectId))
         project = self.gl.projects.get(aProjectId)
         branch = project.branches.get(branch)
         branch.unprotect()
 
     def share_project(self, aProjectId, aGroupId, access):
-        print('{0:30} Access project:{1} by group:{2} with access:{3}'.format('share_project', aProjectId, aGroupId, access))
+        log.info('{0:30} Access project:{1} by group:{2} with access:{3}'.format('share_project', aProjectId, aGroupId, access))
         project = self.gl.projects.get(aProjectId)
         try:
             for s in project.shared_with_groups:
                 if (s['group_id'] == aGroupId and s['group_access_level'] != access):
-                    print('{0:30} Access project:{1} by group:{2} - doing unshare then share.'.format('share_project', aProjectId, aGroupId))
+                    log.info('{0:30} Access project:{1} by group:{2} - doing unshare then share.'.format('share_project', aProjectId, aGroupId))
 
                     project.unshare(aGroupId)
                 
@@ -261,7 +264,7 @@ class GitlabAPI():
 
 
     def get_project_shares(self, aProjectId):
-        print('{0:30} Get project shares for:{1}'.format('get_project_shares', aProjectId))
+        log.info('{0:30} Get project shares for:{1}'.format('get_project_shares', aProjectId))
         project = self.gl.projects.get(aProjectId)
         try:
             return project.shared_with_groups
@@ -270,7 +273,7 @@ class GitlabAPI():
 
 
     def create_get_fork(self, aProjectId, aGroupName):
-        print('{0:30} Create fork of project:{1} to group:{2}'.format('create_get_fork', aProjectId, aGroupName))
+        log.info('{0:30} Create fork of project:{1} to group:{2}'.format('create_get_fork', aProjectId, aGroupName))
 
         project = self.gl.projects.get(aProjectId)
 
@@ -279,21 +282,21 @@ class GitlabAPI():
             if fork.namespace['name'] == aGroupName:
                 return fork.id
 
-        print('{0:30} {1} CREATING'.format('', aGroupName))
+        log.info('{0:30} {1} CREATING'.format('', aGroupName))
         fork = project.forks.create({'namespace': aGroupName})
         return fork.id
 
     def create_hook(self, url, token = None):
-        print('{0:30} {1}'.format('create_hook', url))
+        log.info('{0:30} {1}'.format('create_hook', url))
         hooks = self.gl.hooks.list()
         for hook in hooks:
             if hook.url == url:
                 return
-        print('{0:30} {1} CREATED'.format('', url))
+        log.info('{0:30} {1} CREATED'.format('', url))
         hook = self.gl.hooks.create({'url': url, 'token': token, 'enable_ssl_verification': False, 'merge_requests_events': True, 'repository_update_events': True})
 
     def add_file (self, aProjectId, branch, fileName, fileContents):
-        print('{0:30} Add file:{1} in branch {2} file:{3}'.format('add_file', aProjectId, branch, fileName))
+        log.info('{0:30} Add file:{1} in branch {2} file:{3}'.format('add_file', aProjectId, branch, fileName))
         project = self.gl.projects.get(aProjectId)
         try:
             f = project.files.get(file_path=fileName, ref=branch)
@@ -305,5 +308,5 @@ class GitlabAPI():
                                 'author_email': 'no-reply@popdata.local',
                                 'author_name': 'Automation Agent',
                                 'commit_message': 'Create file'})
-                print(f)
+                log.info(f)
 

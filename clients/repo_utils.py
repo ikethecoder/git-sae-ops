@@ -1,6 +1,9 @@
 
 from urllib.parse import urlparse
 
+import logging
+log = logging.getLogger(__name__)
+
 class RepoUtils():
 
     # Param: https://projectscstg.popdata.bc.ca/shares/ikethecoder-external-test-repo.git
@@ -10,6 +13,6 @@ class RepoUtils():
         parts = o.path.split('/')
         repo = parts[2]
         repo = repo[0:-4].lower()
-        print ("New repo %s" % repo)
+        log.info ("New repo %s" % repo)
 
         return repo

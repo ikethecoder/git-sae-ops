@@ -2,35 +2,38 @@ import tempfile
 from git import Repo
 from furl import furl
 
+import logging
+log = logging.getLogger(__name__)
+
 class GitAPI():
     def __init__(self, git_url, token = None):
         self.repo_dir = tempfile.mkdtemp()
         repo_dir = self.repo_dir
-        print('{0:30} {1} '.format('gitapi.init', git_url))
+        log.info('{0:30} {1} '.format('gitapi.init', git_url))
 
         self.git_url = git_url
         self.cloned_repo = Repo.clone_from(self.prepare_url(git_url, token), repo_dir)
 
     def set_user (self, username, email):
-        print('{0:30} U={1} E={2}'.format('gitapi.set_user', username, email))
+        log.info('{0:30} U={1} E={2}'.format('gitapi.set_user', username, email))
         self.cloned_repo.config_writer().set_value("user", "name", username).release()
         self.cloned_repo.config_writer().set_value("user", "email", email).release()
 
     def info(self):
-        print('{0:30} {1}'.format('gitapi.info', self.cloned_repo.branches))
+        log.info('{0:30} {1}'.format('gitapi.info', self.cloned_repo.branches))
 
     def has_branch(self, branch):
         repo = self.cloned_repo
         return branch in self.cloned_repo.branches
 
     def checkout_new(self, branch):
-        print('{0:30} {1} '.format('gitapi.checkout_new', branch))
+        log.info('{0:30} {1} '.format('gitapi.checkout_new', branch))
         repo = self.cloned_repo
         repo.git.checkout('-b', branch)
         return repo.head.commit
 
     def checkout(self, branch):
-        print('{0:30} {1} '.format('gitapi.checkout', branch))
+        log.info('{0:30} {1} '.format('gitapi.checkout', branch))
         repo = self.cloned_repo
         repo.git.checkout(branch)
         origin = repo.remote(name='origin')
@@ -42,7 +45,7 @@ class GitAPI():
         return repo.head.commit
 
     def pull_from_remote (self, branch, to_branch, git_url, token = None):
-        print('{0:30} {1} {2}'.format('gitapi.pull_from_remote', git_url, branch))
+        log.info('{0:30} {1} {2}'.format('gitapi.pull_from_remote', git_url, branch))
         repo = self.cloned_repo
         origin = repo.create_remote('public', self.prepare_url(git_url, token))
         assert origin.exists()
@@ -61,7 +64,7 @@ class GitAPI():
         return repo.head.commit
 
     def push_to_origin (self, branch):
-        print('{0:30} {1}'.format('gitapi.push_to_origin', branch))
+        log.info('{0:30} {1}'.format('gitapi.push_to_origin', branch))
         repo = self.cloned_repo
         # remote = repo.remote(name='origin')
         # remote.push(refspec="%s-incoming" % branch)
@@ -81,14 +84,14 @@ class GitAPI():
         return self.repo_dir
 
     def commit (self, branch, message):
-        print('{0:30} {1} : {2}'.format('gitapi.commit', branch, message))
+        log.info('{0:30} {1} : {2}'.format('gitapi.commit', branch, message))
         repo = self.cloned_repo
 
         repo.git.add(A=True)
         repo.index.commit(message)
 
     def commit_and_push (self, branch, message):
-        print('{0:30} {1} : {2}'.format('gitapi.commit_and_push', branch, message))
+        log.info('{0:30} {1} : {2}'.format('gitapi.commit_and_push', branch, message))
         repo = self.cloned_repo
 
         repo.git.add(A=True)
@@ -97,7 +100,7 @@ class GitAPI():
         origin.push(refspec=branch)
 
     def has_changes (self):
-        print('{0:30}'.format('gitapi.has_changes'))
+        log.info('{0:30}'.format('gitapi.has_changes'))
         repo = self.cloned_repo
         files = []
         for untracked in repo.untracked_files:
@@ -106,5 +109,5 @@ class GitAPI():
         for item in repo.index.diff(None):
             files.append(item.a_path)
 
-        print(files)
+        log.info(files)
         return files
