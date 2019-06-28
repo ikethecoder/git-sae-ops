@@ -48,7 +48,7 @@ def create_request() -> object:
         try:
             mr = RequestExport(conf).run(repo, externalRepository, branch)
             if mr is None:
-                return jsonify(status="no_changes"), HTTPStatus.OK
+                return jsonify(status="error", message="no changes"), HTTPStatus.BAD_REQUEST
             else:
                 return jsonify(status="ok",location=mr.web_url,title=mr.title), HTTPStatus.OK
         except BaseException as error:
@@ -58,7 +58,7 @@ def create_request() -> object:
         try:
             mr = RequestImport(conf).run(repo, externalRepository, branch)
             if mr is None:
-                return jsonify(status="no_changes"), HTTPStatus.OK
+                return jsonify(status="error", message="no changes"), HTTPStatus.BAD_REQUEST
             else:
                 return jsonify(status="ok",location=mr.web_url,title=mr.title), HTTPStatus.OK
         except BaseException as error:
