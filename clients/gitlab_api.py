@@ -1,5 +1,7 @@
 import gitlab
 
+from gitlab.exceptions import GitlabError
+
 import logging
 log = logging.getLogger(__name__)
 
@@ -122,7 +124,13 @@ class GitlabAPI():
 
         log.info('{0:30} id={1} [{2}] {3}'.format('approve_merge', mr.id, mr.state, mr.title))
 
-        mr.merge()
+        try:
+            mr.merge()
+        except GitlabError as err:
+            if (err.response_code == 405):
+                raise Exception("Merge request can not be merged.  Check that the MR has met all required criteria.")
+            else:
+                raise err
 
     def delete_merge (self, mr):
 
