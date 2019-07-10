@@ -13,6 +13,7 @@ class GitAPI():
 
         self.git_url = git_url
         self.cloned_repo = Repo.clone_from(self.prepare_url(git_url, token), repo_dir)
+        self.cloned_repo.remotes.origin.fetch()
 
     def set_user (self, username, email):
         log.info('{0:30} U={1} E={2}'.format('gitapi.set_user', username, email))
@@ -21,10 +22,15 @@ class GitAPI():
 
     def info(self):
         log.info('{0:30} {1}'.format('gitapi.info', self.cloned_repo.branches))
+        log.info('{0:30} {1}'.format('gitapi.info', self.cloned_repo.refs))
 
     def has_branch(self, branch):
-        repo = self.cloned_repo
-        return branch in self.cloned_repo.branches
+        log.info('{0:30} {1}'.format('gitapi.has_branch', ("origin/%s" % branch)))
+        for b in self.cloned_repo.refs:
+            log.info('{0:30} ? {1}'.format('gitapi.has_branch', b.name))
+            if b.name == ("origin/%s" % branch):
+                return True
+        return False
 
     def checkout_new(self, branch):
         log.info('{0:30} {1} '.format('gitapi.checkout_new', branch))
@@ -97,7 +103,12 @@ class GitAPI():
         repo.git.add(A=True)
         repo.index.commit(message)
         origin = repo.remote(name='origin')
-        origin.push(refspec=branch)
+
+        info = origin.push(refspec=branch)[0]
+        if info.flags & 8: # 8 = REJECTED https://gitpython.readthedocs.io/en/stable/reference.html?highlight=.push
+            raise Exception("Push rejected - %s" % info.summary)
+
+        log.info('{0:30} {1} : {2}'.format('gitapi.commit_and_push', branch, "SUCCESS"))
 
     def has_changes (self):
         log.info('{0:30}'.format('gitapi.has_changes'))

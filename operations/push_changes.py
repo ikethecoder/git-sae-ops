@@ -66,11 +66,11 @@ class PushChanges():
         shares = glapi.create_get_group("shares")
         sreRepoUrl = glapi.get_project(shares, repoName).http_url_to_repo
         tgit = GitAPI(sreRepoUrl, self.projectsc_token)
+        tgit.info()
         if tgit.has_branch(branch):
             tgit.checkout(branch)
         else:
             tgit.checkout_new(branch)
-        tgit.info()
         tgit.set_user(self.git_user['username'], self.git_user['email'])
 
         # Don't ever copy the .gitlab-ci.yml file!

@@ -142,12 +142,14 @@ elif command == 'request-import' and args.destroy == False:
     proj = args.project
     branch = args.branch
     external_url = args.external_url
-
-    o = urlparse(args.external_url)
-    parts = o.path.split('/')
-    repo = "%s-%s" % (parts[1], parts[2])
-    repo = repo[0:-4].lower()
-    print ("New repo %s" % repo)
+    repo = args.repo
+    
+    if args.repo is None:
+        o = urlparse(args.external_url)
+        parts = o.path.split('/')
+        repo = "%s-%s" % (parts[1], parts[2])
+        repo = repo[0:-4].lower()
+        print ("New repo %s" % repo)
 
     RequestImport(config).run(repo, external_url, branch)
 
