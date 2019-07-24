@@ -27,9 +27,9 @@ def gitlab_webhook() -> object:
     conf = Config().data
 
     data = request.get_json()
-    log.debug("---")
-    log.debug(data)
-    log.debug("---")
+    log.info("---")
+    log.info(data)
+    log.info("---")
 
     if "object_kind" in data and data['object_kind'] == "merge_request" and data['project']['namespace'] == conf.get('checkpointGroup'):
         log.info("Merge Request for a checkpoint project detected: %s" % data['repository']['name'])
