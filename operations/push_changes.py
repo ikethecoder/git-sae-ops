@@ -34,6 +34,10 @@ class PushChanges():
         tgit = GitAPI(importUrl, self.github_token)
         tgit.checkout(branch)
         tgit.info()
+        if tgit.has_branch(branch):
+            tgit.checkout(branch)
+        else:
+            tgit.checkout_new(branch)
         tgit.set_user(self.git_user['username'], self.git_user['email'])
 
         # Don't ever copy the .gitlab-ci.yml file!
