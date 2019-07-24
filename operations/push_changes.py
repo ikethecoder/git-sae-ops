@@ -32,7 +32,6 @@ class PushChanges():
 
         # Target
         tgit = GitAPI(importUrl, self.github_token)
-        tgit.checkout(branch)
         tgit.info()
         if tgit.has_branch(branch):
             tgit.checkout(branch)
