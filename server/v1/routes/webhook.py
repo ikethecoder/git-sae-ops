@@ -16,7 +16,38 @@ log = logging.getLogger(__name__)
 
 flow = Blueprint('flow', 'flow')
 
+@flow.route('/merge_retry',
+           methods=['POST'], strict_slashes=False)
+@auth
+def gitlab_webhook() -> object:
+    """
+    Allows for a manual retry of the push
+    """
+    conf = Config().data
 
+    data = request.get_json()
+
+    log.debug("-- MR Merged - initiate mirroring")
+    source = data['source_branch']
+    target = data['target_branch']
+    log.debug("%s --> %s" % (source,target))
+
+    if source.endswith('-outgoing'):
+        repoName = data['repository']
+        log.debug("push_to_external (%s, %s, %s)" % (repoName, None, target))
+        PushChanges(conf).push_to_external(repoName, None, target)
+        log.info("Successful push_to_external mirror")
+
+    elif source.endswith('-incoming'):
+        repoName = data['repository']
+        log.debug("push_to_sae (%s, %s)" % (repoName, target))
+        PushChanges(conf).push_to_sae(repoName, target)
+        log.info("Successful push_to_sae mirror")
+    else:
+        log.debug("ERR: Unexpected source branch %s" % source)
+
+    return jsonify(status="ok"), HTTPStatus.OK
+    
 @flow.route('/webhook',
            methods=['POST'], strict_slashes=False)
 @auth
