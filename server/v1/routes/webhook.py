@@ -19,7 +19,7 @@ flow = Blueprint('flow', 'flow')
 @flow.route('/merge_retry',
            methods=['POST'], strict_slashes=False)
 @auth
-def gitlab_webhook() -> object:
+def gitlab_merge_retry() -> object:
     """
     Allows for a manual retry of the push
     """
