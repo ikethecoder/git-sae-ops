@@ -5,6 +5,25 @@ class RepoOp():
     def __init__(self, glapi):
         self.glapi = glapi
 
+    def join (self, saeProjectName, repoName):
+        glapi = self.glapi
+
+        shareGroup = glapi.get_group('shares')
+
+        teamGroup = glapi.get_group(saeProjectName)
+        glrepo = glapi.get_project(shareGroup.id, repoName)
+        
+        glapi.share_project(glrepo.id, teamGroup.id, gitlab.DEVELOPER_ACCESS)
+
+    def leave (self, saeProjectName, repoName):
+        glapi = self.glapi
+
+        shareGroup = glapi.get_group('shares')
+        teamGroup = glapi.get_group(saeProjectName)
+        glrepo = glapi.get_project(shareGroup.id, repoName)
+        
+        glapi.unshare_project(glrepo.id, teamGroup.id)
+
     def run (self, saeProjectName, repoName, private):
         glapi = self.glapi
 

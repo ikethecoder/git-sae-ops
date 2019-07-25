@@ -2,6 +2,7 @@
     "apiPort"  : 4000,
     "logLevel" : "debug",
     "apiSecret" : "s3cr3t",
+    "sessionSecret" : "s3cret",
 
     "checkpointGroup" : "ocwa-checkpoint",
 
@@ -17,6 +18,18 @@
     "git_user": { 
         "username" : "", 
         "email" : "" 
+    }
+
+    "keycloak": {
+        "host": "",
+        "realm": "",
+        "client_id": "",
+        "client_secret": ""
+    },
+
+    "ocwa": {
+        "ignoredGroups": "/sre-users,/exporterstg,/exporter,/oc,/reports"
+        "projectWhitelist": ""
     }
 
 }

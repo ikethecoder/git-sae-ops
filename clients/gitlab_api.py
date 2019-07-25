@@ -16,6 +16,15 @@ class GitlabAPI():
         user.can_create_group = 1 
         user.save()
 
+    def get_group(self, aGroup):
+        log.info('{0:30} {1}'.format('get_group', aGroup))
+        groups = self.gl.groups.list(search=aGroup)
+        for group in groups:
+            if group.name == aGroup:
+                log.info('{0:30} {1} id:{2}'.format('', aGroup, group.id))
+                return group
+        raise Exception("Group %s not found" % aGroup)
+
     def create_get_group(self, aGroup):
         log.info('{0:30} {1}'.format('create_get_group', aGroup))
         groups = self.gl.groups.list(search=aGroup)
@@ -270,6 +279,12 @@ class GitlabAPI():
             else:
                 raise error
 
+    def unshare_project(self, aProjectId, aGroupId):
+        log.info('{0:30} Unshare project:{1} by group:{2}'.format('unshare_project', aProjectId, aGroupId))
+        project = self.gl.projects.get(aProjectId)
+        for s in project.shared_with_groups:
+            if (s['group_id'] == aGroupId):
+                project.unshare(aGroupId)
 
     def get_project_shares(self, aProjectId):
         log.info('{0:30} Get project shares for:{1}'.format('get_project_shares', aProjectId))

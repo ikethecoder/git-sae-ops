@@ -10,6 +10,8 @@ import server.v1.v1 as v1
 from flask import Flask, g, jsonify, make_response, url_for, Response
 from flask_compress import Compress
 
+
+
 def create_app(test_config=None):
     log = logging.getLogger(__name__)
 
@@ -22,6 +24,8 @@ def create_app(test_config=None):
         # load the test config if passed in
         app.config.update(conf.conf.data)
         app.config.update(test_config)
+
+    app.secret_key = conf.data['sessionSecret']
 
     ##Routes##
     v1.Register(app)
