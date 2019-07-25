@@ -16,16 +16,16 @@ conf = Config().data
 
 client_id = conf['keycloak']['client_id']
 client_secret = conf['keycloak']['client_secret']
-oauth_host = conf['keycloak']['host']
+oauth_url = conf['keycloak']['url']
 oauth_realm = conf['keycloak']['realm']
 
 selfserve = OAuth2ConsumerBlueprint(
     "keycloak", 'selfserve',
     client_id=client_id,
     client_secret=client_secret,
-    base_url="%s/auth/realms/%s/protocol/openid-connect/" % (oauth_host, oauth_realm),
-    token_url="%s/auth/realms/%s/protocol/openid-connect/token" % (oauth_host, oauth_realm),
-    authorization_url="%s/auth/realms/%s/protocol/openid-connect/auth" % (oauth_host, oauth_realm),
+    base_url="%s/auth/realms/%s/protocol/openid-connect/" % (oauth_url, oauth_realm),
+    token_url="%s/auth/realms/%s/protocol/openid-connect/token" % (oauth_url, oauth_realm),
+    authorization_url="%s/auth/realms/%s/protocol/openid-connect/auth" % (oauth_url, oauth_realm),
     redirect_to="keycloak._selfserve"
 )
 
