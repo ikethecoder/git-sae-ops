@@ -61,11 +61,15 @@ def _selfserve():
         saeProject = get_sae_project(groups)
 
         if saeProject not in conf['ocwa']['projectWhitelist'].split(','):
+            message = "Access Denied - Group %s not found in whitelist." % saeProject
+            activity ('access', '', False, message)
             del selfserve.token
-            return render_template('error.html', message = "Access Denied - Group not found in whitelist.")
+            return render_template('error.html', message = message)
 
         session['groups'] = groups
         session['username'] = resp.json()['preferred_username']
+
+        activity ('access', '', True, "Access Granted")
 
         return redirect(url_for("keycloak.main"))
     except oauthlib.oauth2.rfc6749.errors.TokenExpiredError as ex:
@@ -142,7 +146,7 @@ def rename_repo() -> object:
     saeProjectName = get_sae_project(session['groups'])
 
     newRepoName = ""
-    
+
     try:
         validate (data, ['repository', 'newRepository'])
         repoName = data['repository']
