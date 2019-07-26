@@ -1,8 +1,10 @@
 from flask import Blueprint, jsonify, session, request, redirect, url_for, render_template
 from flask_dance.consumer import OAuth2ConsumerBlueprint
 
+import json
 import oauthlib
-
+import datetime
+from datetime import timezone
 from operations.enquiry import Enquiry
 from operations.repo import RepoOp
 from operations.rename import Rename
@@ -78,6 +80,20 @@ def main():
 
     return render_template('index.html', repo_list=get_linked_repos(), unlinked_repo_list=get_unlinked_repos(), groups=session['groups'], project=get_sae_project(session['groups']), tab={"create":"show active"})
 
+
+@selfserve.route('/activity',
+           methods=['GET'], strict_slashes=False)
+def activity() -> object:
+
+    with open('/audit/activity.log', 'r') as f:
+        content = f.readlines()
+    content = [json.loads(x.strip()) for x in content] 
+
+    content.reverse()
+
+    return json.dumps(content)
+
+
 @selfserve.route('/projectsc/repository',
            methods=['POST'], strict_slashes=False)
 def new_repo() -> object:
@@ -90,12 +106,12 @@ def new_repo() -> object:
 
     saeProjectName = get_sae_project(session['groups'])
 
+    private = 'private' in data and data['private'] == 'private'
+
     try:
         validate (data, ['repository'])
 
         repoName = data['repository']
-        private = 'private' in data and data['private'] == 'private'
-        print("Private? %s" % private)
 
         projectsc_host = conf['projectsc']['host']
         projectsc_token = conf['projectsc']['token']
@@ -104,10 +120,14 @@ def new_repo() -> object:
 
         RepoOp(glapi).run(saeProjectName, repoName, private)
     except BaseException as error:
-        print(error)
-        return render_template('index.html', tab={"create":"show active"}, repo_list=get_linked_repos(), unlinked_repo_list=get_unlinked_repos(), groups=session['groups'], project=get_sae_project(session['groups']), message="Failed - %s" % error)
+        print("Exception %s" % error)
+        return do_render_template(success=False, data=data, action="create", tab={"create":"show active"}, message="Failed - %s" % error)
 
-    return render_template('index.html', tab={"create":"show active"}, repo_list=get_linked_repos(), unlinked_repo_list=get_unlinked_repos(), groups=session['groups'], project=get_sae_project(session['groups']), message="Repository %s created by %s!" % (data['repository'], session['username']))
+    message = "Shared repository %s created" % data['repository']
+    if private:
+        message = "Private repository %s created" % data['repository']
+
+    return do_render_template(success=True, data=data, action="create", tab={"create":"show active"}, message=message)
 
 @selfserve.route('/projectsc/repository/rename',
            methods=['POST'], strict_slashes=False)
@@ -121,6 +141,8 @@ def rename_repo() -> object:
 
     saeProjectName = get_sae_project(session['groups'])
 
+    newRepoName = ""
+    
     try:
         validate (data, ['repository', 'newRepository'])
         repoName = data['repository']
@@ -132,11 +154,11 @@ def rename_repo() -> object:
         glapi = GitlabAPI(projectsc_host, projectsc_token)
 
         Rename(conf).rename(repoName, newRepoName)
-    except BaseException as ex:
-        print("Exception %s" % ex)
-        return render_template('index.html', tab={"rename":"show active"}, repo_list=get_linked_repos(), unlinked_repo_list=get_unlinked_repos(), groups=session['groups'], project=get_sae_project(session['groups']), message="Failed - %s" % ex)
+    except BaseException as error:
+        print("Exception %s" % error)
+        return do_render_template(success=False, data=data, action="rename", tab={"rename":"show active"}, message="Failed to rename to %s - %s" % (newRepoName, error))
 
-    return render_template('index.html', tab={"rename":"show active"}, repo_list=get_linked_repos(), unlinked_repo_list=get_unlinked_repos(), groups=session['groups'], project=get_sae_project(session['groups']), message="Repository %s renamed to %s by %s!" % (repoName, newRepoName, session['username']))
+    return do_render_template(success=True, data=data, action="rename", tab={"rename":"show active"}, message="Repository %s renamed to %s" % (repoName, newRepoName))
 
 @selfserve.route('/projectsc/repository/join',
            methods=['POST'], strict_slashes=False)
@@ -162,9 +184,9 @@ def join_repo() -> object:
         RepoOp(glapi).join(saeProjectName, repoName)
     except BaseException as error:
         print("Exception %s" % error)
-        return do_render_template(tab={"join":"show active"}, message="Failed - %s" % error)
+        return do_render_template(success=False, data=data, action="join", tab={"join":"show active"}, message="Failed - %s" % error)
 
-    return do_render_template(tab={"join":"show active"}, message="Repository %s shared with %s by %s!" % (repoName, saeProjectName, session['username']))
+    return do_render_template(success=True, data=data, action="join", tab={"join":"show active"}, message="Repository %s shared with %s" % (repoName, saeProjectName))
 
 
 @selfserve.route('/projectsc/repository/leave',
@@ -192,9 +214,9 @@ def leave_repo() -> object:
 
     except BaseException as error:
         print("Exception %s" % error)
-        return do_render_template(tab={"leave":"show active"}, message="Failed - %s" % error)
+        return do_render_template(success=False, data=data, action="leave", tab={"leave":"show active"}, message="Failed - %s" % error)
 
-    return do_render_template(tab={"leave":"show active"}, message="Repository %s access removed for project %s by %s!" % (repoName, saeProjectName, session['username']))
+    return do_render_template(success=True, data=data, action="leave", tab={"leave":"show active"}, message="Repository %s access removed for project %s" % (repoName, saeProjectName))
 
 def get_linked_repos():
     saeProject = get_sae_project(session['groups'])
@@ -238,4 +260,25 @@ def validate (data, names):
             raise Exception ("%s is required." % name)
 
 def do_render_template(**args):
+    if 'repository' in args['data']:
+        activity (args['action'], args['data']['repository'], args['success'], args['message'])
     return render_template('index.html', **args, repo_list=get_linked_repos(), unlinked_repo_list=get_unlinked_repos(), groups=session['groups'], project=get_sae_project(session['groups']))
+
+
+def activity (action, repo, success, message):
+
+    with open('/audit/activity.log', 'a', 1) as f:
+
+        payload = {
+            "action" : action,
+            "repository" : repo,
+            "team" : get_sae_project(session['groups']),
+            "actor" : session['username'],
+            "ts" : utc_to_local(datetime.datetime.now()).isoformat(),
+            "success": success,
+            "message": message
+        }
+        f.write(json.dumps(payload) + os.linesep)
+
+def utc_to_local(utc_dt):
+    return utc_dt.replace(tzinfo=timezone.utc).astimezone(tz=None)

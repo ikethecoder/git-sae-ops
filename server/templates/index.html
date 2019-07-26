@@ -61,7 +61,10 @@
                                 <li class="nav-item">
                                     <a class="nav-link {{tab['leave']}}" id="contact-tab" data-toggle="tab" href="#leave" role="tab" aria-controls="leave" aria-selected="false">Leave Repo</a>
                                 </li>
-                                </ul>
+                                <li class="nav-item">
+                                    <a class="nav-link {{tab['activity']}}" id="activity-tab" data-toggle="tab" href="#activity" role="tab" aria-controls="activity" aria-selected="false">Activity</a>
+                                </li>
+                            </ul>
                         </div>
                         <div class="card-body">
                             <div class="tab-content" id="myTabContent">
@@ -148,11 +151,22 @@
                                             </div>
                                             <button type="submit" class="btn btn-primary">Submit</button>
                                         </form>                                    
-                                    </div>
                                 </div>
+                                <div class="tab-pane fade {{tab['activity']}}" id="activity" role="tabpanel" aria-labelledby="activity-tab">
+                                        <h2>Activity</h2>
+                                        <div id="activity_root"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
             </div>
+
+            <script src="/static/react/react.min.js"></script>
+            <script src="/static/react/react-dom.min.js"></script>
+            <script src="/static/react/browser.min.js"></script>
+    
+            <script type="text/babel" src="/static/app/activity.jsx"></script>
+
     </body>
 </html>

@@ -30,8 +30,9 @@ bin/glclic hello
 ```
 docker run --rm -ti \
   -p 4100:4000 \
-  -e OAUTHLIB_INSECURE_TRANSPORT=1
+  -e OAUTHLIB_INSECURE_TRANSPORT=1 \
   -v `pwd`/config/default.json:/app/config/default.json \
+  -v `pwd`/audit:/audit \
   git-sae-ops
 
 ```
