@@ -24,6 +24,8 @@ log = logging.getLogger(__name__)
 
 requestApi = Blueprint('request', 'request')
 
+DEFAULT_ACTOR = "ocwa"
+
 @requestApi.route('/',
            methods=['POST'], strict_slashes=False)
 @auth
@@ -51,28 +53,28 @@ def create_request() -> object:
             mr = RequestExport(conf).run(repo, externalRepository, branch)
 
             if mr is None:
-                activity ('initiate_export', repo, '', 'system', False, "No changes to export")
+                activity ('initiate_export', repo, '', DEFAULT_ACTOR, False, "No changes to export")
                 return jsonify(status="error", message="no changes"), HTTPStatus.BAD_REQUEST
             else:
-                activity ('initiate_export', repo, '', 'system', True, "Export %s branch to external repository initiated" % branch)
+                activity ('initiate_export', repo, '', DEFAULT_ACTOR, True, "Export %s branch to external repository initiated" % branch)
                 return jsonify(status="ok",location=mr.web_url,title=mr.title), HTTPStatus.OK
 
 
         except BaseException as error:
-            activity ('initiate_export', repo, '', 'system', False, "Initiate export failed - " % error)
+            activity ('initiate_export', repo, '', DEFAULT_ACTOR, False, "Initiate export failed - " % error)
             return jsonify(status="error",message=("%s" % error)), HTTPStatus.BAD_REQUEST
 
     elif direction == 'import':
         try:
             mr = RequestImport(conf).run(repo, externalRepository, branch)
             if mr is None:
-                activity ('initiate_import', repo, '', 'system', False, "No changes to import")
+                activity ('initiate_import', repo, '', DEFAULT_ACTOR, False, "No changes to import")
                 return jsonify(status="error", message="no changes"), HTTPStatus.BAD_REQUEST
             else:
-                activity ('initiate_import', repo, '', 'system', True, "Import %s branch from external repository initiated" % branch)
+                activity ('initiate_import', repo, '', DEFAULT_ACTOR, True, "Import %s branch from external repository initiated" % branch)
                 return jsonify(status="ok",location=mr.web_url,title=mr.title), HTTPStatus.OK
         except BaseException as error:
-            activity ('initiate_import', repo, '', 'system', False, "Initiate import failed - " % error)
+            activity ('initiate_import', repo, '', DEFAULT_ACTOR, False, "Initiate import failed - " % error)
             return jsonify(status="error",message=("%s" % error)), HTTPStatus.BAD_REQUEST
 
     abort(Response("The 'direction' must be 'import' or 'export'", 400))
@@ -101,17 +103,17 @@ def delete_request() -> object:
     if direction == 'export':
         try:
             Cancel(conf).cancel_export(repo, branch)
-            activity ('cancel_export', repo, '', 'system', True, "Cancelled merge request")
+            activity ('cancel_export', repo, '', DEFAULT_ACTOR, True, "Cancelled merge request")
         except BaseException as error:
-            activity ('cancel_export', repo, '', 'system', False, "Cancelled export failed - " % error)
+            activity ('cancel_export', repo, '', DEFAULT_ACTOR, False, "Cancelled export failed - " % error)
             return jsonify(status="error",message=("%s" % error)), HTTPStatus.BAD_REQUEST
 
     elif direction == 'import':
         try:
             Cancel(conf).cancel_import(repo, branch)
-            activity ('cancel_import', repo, '', 'system', True, "Cancelled merge request")
+            activity ('cancel_import', repo, '', DEFAULT_ACTOR, True, "Cancelled merge request")
         except BaseException as error:
-            activity ('cancel_import', repo, '', 'system', False, "Cancelled import failed - " % error)
+            activity ('cancel_import', repo, '', DEFAULT_ACTOR, False, "Cancelled import failed - " % error)
             return jsonify(status="error",message=("%s" % error)), HTTPStatus.BAD_REQUEST
 
     else:
@@ -143,17 +145,17 @@ def close_request() -> object:
     if direction == 'export':
         try:
             Close(conf).close_export(repo, branch)
-            activity ('close_export', repo, '', 'system', True, "Closed merge request")
+            activity ('close_export', repo, '', DEFAULT_ACTOR, True, "Closed merge request")
         except BaseException as error:
-            activity ('close_export', repo, '', 'system', False, "Closed merge failed - " % error)
+            activity ('close_export', repo, '', DEFAULT_ACTOR, False, "Closed merge failed - " % error)
             return jsonify(status="error",message=("%s" % error)), HTTPStatus.BAD_REQUEST
 
     elif direction == 'import':
         try:
             Close(conf).close_import(repo, branch)
-            activity ('close_import', repo, '', 'system', True, "Closed merge request")
+            activity ('close_import', repo, '', DEFAULT_ACTOR, True, "Closed merge request")
         except BaseException as error:
-            activity ('close_import', repo, '', 'system', False, "Closed merge failed - " % error)
+            activity ('close_import', repo, '', DEFAULT_ACTOR, False, "Closed merge failed - " % error)
             return jsonify(status="error",message=("%s" % error)), HTTPStatus.BAD_REQUEST
 
     else:
@@ -186,17 +188,17 @@ def merge_request() -> object:
     if direction == 'export':
         try:
             Merge(conf).approve_export_mr(repo, branch)
-            activity ('merge_export', repo, '', 'system', True, "Approved merge request")
+            activity ('merge_export', repo, '', DEFAULT_ACTOR, True, "Approved merge request")
         except BaseException as error:
-            activity ('merge_export', repo, '', 'system', False, "Merge request error - %s" % error)
+            activity ('merge_export', repo, '', DEFAULT_ACTOR, False, "Merge request error - %s" % error)
             return jsonify(status="error",message=("%s" % error)), HTTPStatus.BAD_REQUEST
 
     elif direction == 'import':
         try:
             Merge(conf).approve_import_mr(repo, branch)
-            activity ('merge_import', repo, '', 'system', True, "Approved merge request")
+            activity ('merge_import', repo, '', DEFAULT_ACTOR, True, "Approved merge request")
         except BaseException as error:
-            activity ('merge_import', repo, '', 'system', False, "Merge request error - %s" % error)
+            activity ('merge_import', repo, '', DEFAULT_ACTOR, False, "Merge request error - %s" % error)
             return jsonify(status="error",message=("%s" % error)), HTTPStatus.BAD_REQUEST
 
     else:

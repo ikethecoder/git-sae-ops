@@ -78,18 +78,18 @@ def gitlab_webhook() -> object:
                     log.debug("push_to_external (%s, %s, %s)" % (repoName, None, target))
                     PushChanges(conf).push_to_external(repoName, None, target)
                     log.info("Successful push_to_external mirror")
-                    activity ('push_to_external', repoName, '', 'system', True, "Push completed")
+                    activity ('push_to_external', repoName, '', 'gitlab', True, "Push completed")
 
                 elif source.endswith('-incoming'):
                     repoName = data['repository']['name']
                     log.debug("push_to_sae (%s, %s)" % (repoName, target))
                     PushChanges(conf).push_to_sae(repoName, target)
                     log.info("Successful push_to_sae mirror")
-                    activity ('push_to_internal', repoName, '', 'system', True, "Push completed")
+                    activity ('push_to_internal', repoName, '', 'gitlab', True, "Push completed")
                 else:
                     raise Exception("Unexpected source branch %s" % source)
             except BaseException as error:
-                activity ('push_to_external', repoName, '', 'system', False, "Push failed - %s" % error)
+                activity ('push_to_external', repoName, '', 'gitlab', False, "Push failed - %s" % error)
         else:
             log.debug("-- MR Ignored - state %s" % data['object_attributes']['state'])
     elif "event_name" in data:
