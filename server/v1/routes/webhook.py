@@ -11,6 +11,8 @@ import sys
 from server.auth.auth import auth
 from operations.push_changes import PushChanges
 
+from server.activity.activity import activity
+
 import logging
 log = logging.getLogger(__name__)
 
@@ -70,19 +72,24 @@ def gitlab_webhook() -> object:
             target = data['object_attributes']['target_branch']
             log.debug("%s --> %s" % (source,target))
 
-            if source.endswith('-outgoing'):
-                repoName = data['repository']['name']
-                log.debug("push_to_external (%s, %s, %s)" % (repoName, None, target))
-                PushChanges(conf).push_to_external(repoName, None, target)
-                log.info("Successful push_to_external mirror")
+            try:
+                if source.endswith('-outgoing'):
+                    repoName = data['repository']['name']
+                    log.debug("push_to_external (%s, %s, %s)" % (repoName, None, target))
+                    PushChanges(conf).push_to_external(repoName, None, target)
+                    log.info("Successful push_to_external mirror")
+                    activity ('push_to_external', repoName, '', 'system', True, "Push completed")
 
-            elif source.endswith('-incoming'):
-                repoName = data['repository']['name']
-                log.debug("push_to_sae (%s, %s)" % (repoName, target))
-                PushChanges(conf).push_to_sae(repoName, target)
-                log.info("Successful push_to_sae mirror")
-            else:
-                log.debug("ERR: Unexpected source branch %s" % source)
+                elif source.endswith('-incoming'):
+                    repoName = data['repository']['name']
+                    log.debug("push_to_sae (%s, %s)" % (repoName, target))
+                    PushChanges(conf).push_to_sae(repoName, target)
+                    log.info("Successful push_to_sae mirror")
+                    activity ('push_to_internal', repoName, '', 'system', True, "Push completed")
+                else:
+                    raise Exception("Unexpected source branch %s" % source)
+            except BaseException as error:
+                activity ('push_to_external', repoName, '', 'system', False, "Push failed - %s" % error)
         else:
             log.debug("-- MR Ignored - state %s" % data['object_attributes']['state'])
     elif "event_name" in data:

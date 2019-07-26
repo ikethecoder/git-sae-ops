@@ -9,7 +9,7 @@ from operations.enquiry import Enquiry
 from operations.repo import RepoOp
 from operations.rename import Rename
 from clients.gitlab_api import GitlabAPI
-
+from server.activity.activity import activity
 
 from server.config import Config
 import os
@@ -87,7 +87,7 @@ def main():
 
 @selfserve.route('/activity',
            methods=['GET'], strict_slashes=False)
-def activity() -> object:
+def view_activity() -> object:
 
     with open('/audit/activity.log', 'r') as f:
         content = f.readlines()
@@ -264,25 +264,11 @@ def validate (data, names):
             raise Exception ("%s is required." % name)
 
 def do_render_template(**args):
+
     if 'repository' in args['data']:
-        activity (args['action'], args['data']['repository'], args['success'], args['message'])
+        team = get_sae_project(session['groups'])
+        actor = session['username']
+        activity (args['action'], args['data']['repository'], team, actor, args['success'], args['message'])
     return render_template('index.html', **args, repo_list=get_linked_repos(), unlinked_repo_list=get_unlinked_repos(), groups=session['groups'], project=get_sae_project(session['groups']))
 
 
-def activity (action, repo, success, message):
-
-    with open('/audit/activity.log', 'a', 1) as f:
-
-        payload = {
-            "action" : action,
-            "repository" : repo,
-            "team" : get_sae_project(session['groups']),
-            "actor" : session['username'],
-            "ts" : utc_to_local(datetime.datetime.now()).isoformat(),
-            "success": success,
-            "message": message
-        }
-        f.write(json.dumps(payload) + os.linesep)
-
-def utc_to_local(utc_dt):
-    return utc_dt.replace(tzinfo=timezone.utc).astimezone(tz=None)
