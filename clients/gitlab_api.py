@@ -233,6 +233,14 @@ class GitlabAPI():
                 return False
         raise Exception("Project %s in %s not found" % (aProject, aNamespaceId))
 
+    def project_exists(self, aNamespaceId, aProject):
+        log.info('{0:30} {1}'.format('get_project', aProject))
+        projects = self.gl.projects.list(search=aProject)
+        for project in projects:
+            if project.name == aProject and project.namespace['id'] == aNamespaceId:
+                return True
+        return False
+
     def get_project(self, aNamespaceId, aProject):
         log.info('{0:30} {1}'.format('get_project', aProject))
         projects = self.gl.projects.list(search=aProject)

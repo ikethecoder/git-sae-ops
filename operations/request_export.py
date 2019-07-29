@@ -21,6 +21,10 @@ class RequestExport():
         if glapi.has_branch (checkpoint, repoName, "%s-outgoing" % branch):
             raise Exception("Export request rejected.  Branch '%s' already exists." % ("%s-outgoing" % branch))
 
+        # Do a quick checkout from the external URL to make sure it is correct
+        xgit = GitAPI(importUrl, self.github_token)
+        xgit.checkout(branch)
+
         #tgit = self.prep_checkpoint_from_external(repoName, importUrl, branch, branch, self.github_token)
 
         # Source (SRE)

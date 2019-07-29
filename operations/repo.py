@@ -13,6 +13,8 @@ class RepoOp():
         teamGroup = glapi.get_group(saeProjectName)
         glrepo = glapi.get_project(shareGroup.id, repoName)
         
+        self.validate_private_repo (glrepo, saeProjectName)
+
         glapi.share_project(glrepo.id, teamGroup.id, gitlab.DEVELOPER_ACCESS)
 
     def leave (self, saeProjectName, repoName):
@@ -32,6 +34,9 @@ class RepoOp():
 
         # Have a 'checkpoint' group that controls movement of files in/out of the SRE
         public = glapi.create_get_group("ocwa-checkpoint")
+
+        if glapi.project_exists(public, repoName):
+            raise Exception("Project %s already exists" % repoName)
 
         publicRepo = glapi.create_get_project(public, repoName)
         glapi.config_project_variant2(publicRepo)
@@ -68,6 +73,19 @@ class RepoOp():
         nonMaintainerGroups = 0
 
         shares = glapi.get_project_shares(glrepo)
+
+        for s in shares:
+            if (s['group_access_level'] == 30 and s['group_name'] != project_name):
+                nonMaintainerGroups = nonMaintainerGroups + 1
+        
+        if (nonMaintainerGroups > 0):
+            raise Exception("Private repos can only have one Developer group associated.  This is because Issues and Wiki are enabled.")
+
+    def validate_private_repo (self, project, project_name):
+        shares = project.shared_with_groups
+
+        if project.issues_enabled == False:
+            return
 
         for s in shares:
             if (s['group_access_level'] == 30 and s['group_name'] != project_name):
