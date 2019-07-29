@@ -22,8 +22,11 @@ class RequestExport():
             raise Exception("Export request rejected.  Branch '%s' already exists." % ("%s-outgoing" % branch))
 
         # Do a quick checkout from the external URL to make sure it is correct
-        xgit = GitAPI(importUrl, self.github_token)
-        xgit.checkout(branch)
+        try:
+            xgit = GitAPI(importUrl, self.github_token)
+            xgit.info()
+        except:
+            raise Exception("Unable to access external repository %s" % importUrl)
 
         #tgit = self.prep_checkpoint_from_external(repoName, importUrl, branch, branch, self.github_token)
 

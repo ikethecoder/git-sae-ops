@@ -46,10 +46,10 @@ class Activity extends React.Component {
         <thead className="thead-dark">
           <tr>
             <th scope="col">Performed At</th>
-            <th scope="col">By User</th>
+            <th scope="col">By Actor</th>
             <th scope="col">Action</th>
             <th scope="col">Repository</th>
-            <th scope="col" width="40%">Result</th>
+            <th scope="col" width="30%">Result</th>
           </tr>
         </thead>
         <tbody>
