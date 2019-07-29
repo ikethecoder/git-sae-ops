@@ -32,6 +32,9 @@ selfserve = OAuth2ConsumerBlueprint(
 )
 
 def get_sae_project (group_list):
+    if len(group_list) == 0:
+        return ""
+
     group = group_list[0]
     if group.startswith('/'):
         group = group[1:]
