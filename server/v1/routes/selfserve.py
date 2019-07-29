@@ -62,14 +62,14 @@ def _selfserve():
 
         if saeProject not in conf['ocwa']['projectWhitelist'].split(','):
             message = "Access Denied - Group %s not found in whitelist." % saeProject
-            activity ('access', '', False, message)
+            activity ('access', '', saeProject, resp.json()['preferred_username'], False, message)
             del selfserve.token
             return render_template('error.html', message = message)
 
         session['groups'] = groups
         session['username'] = resp.json()['preferred_username']
 
-        activity ('access', '', True, "Access Granted")
+        activity ('access', '', saeProject, session['username'], True, "Access Granted")
 
         return redirect(url_for("keycloak.main"))
     except oauthlib.oauth2.rfc6749.errors.TokenExpiredError as ex:
