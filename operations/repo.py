@@ -84,6 +84,8 @@ class RepoOp():
     def validate_private_repo (self, project, project_name):
         shares = project.shared_with_groups
 
+        nonMaintainerGroups = 0
+
         if project.issues_enabled == False:
             return
 
