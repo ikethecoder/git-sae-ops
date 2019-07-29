@@ -79,7 +79,7 @@ class RepoOp():
                 nonMaintainerGroups = nonMaintainerGroups + 1
         
         if (nonMaintainerGroups > 0):
-            raise Exception("Private repos can only have one Developer group associated.  This is because Issues and Wiki are enabled.")
+            raise Exception("Private repos can only have one Developer group associated.")
 
     def validate_private_repo (self, project, project_name):
         shares = project.shared_with_groups
@@ -94,5 +94,5 @@ class RepoOp():
                 nonMaintainerGroups = nonMaintainerGroups + 1
         
         if (nonMaintainerGroups > 0):
-            raise Exception("Private repos can only have one Developer group associated.  This is because Issues and Wiki are enabled.")
+            raise Exception("Private repos can only have one Developer group associated.")
 
