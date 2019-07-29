@@ -231,7 +231,9 @@ def get_linked_repos():
     for project in projects:
         for share in project.shared_with_groups:
             if share['group_name'] == saeProject:
-                repo_list.append({"name":project.name, "url":project.http_url_to_repo})
+                private = project.issues_enabled
+                share_count = len(project.shared_with_groups) - 1
+                repo_list.append({"name":project.name, "url":project.http_url_to_repo, "private":private, "share_count":share_count})
 
     print(repo_list)
 
@@ -250,7 +252,9 @@ def get_unlinked_repos():
                 found = True
 
         if found == False:
-            repo_list.append({"name":project.name, "url":project.http_url_to_repo})
+            private = project.issues_enabled
+            share_count = len(project.shared_with_groups) - 1
+            repo_list.append({"name":project.name, "url":project.http_url_to_repo, "private":private, "share_count":share_count})
 
     print(repo_list)
 

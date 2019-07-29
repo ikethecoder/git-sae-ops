@@ -99,7 +99,10 @@
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="radio" name="repository" id="rename_{{ value.name }}" value="{{ value.name }}">
                                                     <label class="form-check-label" for="rename_{{ value.name }}">
-                                                            {{ value.name }}
+                                                            {{ value.name }} <span class="badge badge-pill badge-light">shared: {{value.share_count}}</span>
+                                                                    {% if value.private %}
+                                                                        <span class="badge badge-pill badge-secondary">private</span>
+                                                                    {% endif %}
                                                     </label>
                                                 </div>
                                             {% endfor %}
@@ -122,7 +125,10 @@
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="radio" name="repository" id="join_{{ value.name }}" value="{{ value.name }}">
                                                     <label class="form-check-label" for="join_{{ value.name }}">
-                                                            {{ value.name }}
+                                                            {{ value.name }} <span class="badge badge-pill badge-light">shared: {{value.share_count}}</span>
+                                                                {% if value.private %}
+                                                                    <span class="badge badge-pill badge-secondary">private</span>
+                                                                {% endif %}
                                                     </label>
                                                 </div>
                                             {% endfor %}
@@ -144,7 +150,10 @@
                                                     <div class="form-check">
                                                         <input class="form-check-input" type="radio" name="repository" id="leave_{{ value.name }}" value="{{ value.name }}">
                                                         <label class="form-check-label" for="leave_{{ value.name }}">
-                                                                {{ value.name }}
+                                                                {{ value.name }} <span class="badge badge-pill badge-light">shared: {{value.share_count}}</span>
+                                                                {% if value.private %}
+                                                                    <span class="badge badge-pill badge-secondary">private</span>
+                                                                {% endif %}
                                                         </label>
                                                     </div>
                                                 {% endfor %}
