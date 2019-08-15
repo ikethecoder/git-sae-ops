@@ -58,7 +58,7 @@ def create_request() -> object:
             else:
                 activity ('initiate_export', repo, '', DEFAULT_ACTOR, True, "Export %s branch to external repository initiated" % branch)
 
-                Merge(conf).wait_for_mr_ready(repo, branch)
+                Merge(conf).wait_for_mr_ready(mr)
 
                 return jsonify(status="ok",location=mr.web_url,title=mr.title), HTTPStatus.OK
 
@@ -76,8 +76,8 @@ def create_request() -> object:
             else:
                 activity ('initiate_import', repo, '', DEFAULT_ACTOR, True, "Import %s branch from external repository initiated" % branch)
 
-                Merge(conf).wait_for_mr_ready(repo, branch)
-                
+                Merge(conf).wait_for_mr_ready(mr)
+
                 return jsonify(status="ok",location=mr.web_url,title=mr.title), HTTPStatus.OK
         except BaseException as error:
             activity ('initiate_import', repo, '', DEFAULT_ACTOR, False, "Initiate import failed - %s" % error)

@@ -6,7 +6,7 @@ from datetime import timezone
 
 def activity (action, repo, team, actor, success, message):
 
-    print("Recording actrivity")
+    print("Recording activity")
     with open('/audit/activity.log', 'a', 1) as f:
 
         payload = {

@@ -14,15 +14,8 @@ class Merge():
         self.github_token = config['github']['token']
         self.git_user = config['git_user']
 
-    def wait_for_mr_ready (self, repoName, branch):
+    def wait_for_mr_ready (self, mr):
         log.info('{0:30}'.format('wait_for_mr_ready'))
-
-        glapi = GitlabAPI(self.projectsc_host, self.projectsc_token)
-
-        checkpoint = glapi.create_get_group("ocwa-checkpoint")
-        cpRepo = glapi.get_project(checkpoint, repoName)
-
-        mr = glapi.get_merge_request (cpRepo.id, "%s-outgoing" % branch, "%s" % branch, None, ['ocwa-export'])
 
         for attempt in range(0,60):
             pipelines = mr.pipelines()
