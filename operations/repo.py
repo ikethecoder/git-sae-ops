@@ -67,6 +67,9 @@ class RepoOp():
         glapi.delete_branch(glrepo, "master")
 
         glapi.add_file(glrepo, 'develop', 'LICENSE', open("%s/%s" % (os.path.dirname(os.path.abspath(__file__)), "assets/LICENSE"),"r").read())
+        glapi.add_file(glrepo, 'develop', 'README.md', open("%s/%s" % (os.path.dirname(os.path.abspath(__file__)), "assets/README.md"),"r").read())
+        glapi.add_file(glrepo, 'develop', 'CONTRIBUTING.md', open("%s/%s" % (os.path.dirname(os.path.abspath(__file__)), "assets/CONTRIBUTING.md"),"r").read())
+        glapi.add_file(glrepo, 'develop', 'CODE_OF_CONDUCT.md', open("%s/%s" % (os.path.dirname(os.path.abspath(__file__)), "assets/CODE_OF_CONDUCT.md"),"r").read())
 
 
     def do_private_repo_validation (self, glrepo, project_name):
