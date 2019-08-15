@@ -3,6 +3,9 @@ from clients.git_api import GitAPI
 from clients.file_api import FileUtils
 from clients.gitlab_api import GitlabAPI
 
+import logging
+log = logging.getLogger(__name__)
+
 class RequestExport():
     def __init__(self, config):
         self.projectsc_host = config['projectsc']['host']
@@ -21,12 +24,7 @@ class RequestExport():
         if glapi.has_branch (checkpoint, repoName, "%s-outgoing" % branch):
             raise Exception("Export request rejected.  Branch '%s' already exists." % ("%s-outgoing" % branch))
 
-        # Do a quick checkout from the external URL to make sure it is correct
-        try:
-            xgit = GitAPI(importUrl, self.github_token)
-            xgit.info()
-        except:
-            raise Exception("Unable to access external repository %s" % importUrl)
+        self.prep_external_repo(importUrl, branch)
 
         #tgit = self.prep_checkpoint_from_external(repoName, importUrl, branch, branch, self.github_token)
 
@@ -94,3 +92,15 @@ class RequestExport():
         glapi.create_get_branch (checkpoint, repoName, branch, 'private')
         glapi.protect_branch(repo, branch)
         glapi.add_file(repo, branch, '.gitlab-ci.yml', ciYaml)
+
+    def prep_external_repo (self, url, branch):
+
+        try:
+            git = GitAPI(url, self.github_token)
+            git.info()
+            git.checkout(branch)
+            return git
+        except BaseException as ex:
+            err = str(ex).replace('oauth2', "*****").replace(self.github_token, "*****")
+            log.info('{0:30} {1}'.format('prep_external_repo', err))
+            raise Exception("There was a problem accessing %s at %s.  Please check there is access, repo and branch exists. (%s)" % (branch, url, err))

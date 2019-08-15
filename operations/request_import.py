@@ -3,6 +3,9 @@ from clients.git_api import GitAPI
 from clients.file_api import FileUtils
 from clients.gitlab_api import GitlabAPI
 
+import logging
+log = logging.getLogger(__name__)
+
 class RequestImport():
     def __init__(self, config):
         self.projectsc_host = config['projectsc']['host']
@@ -61,10 +64,15 @@ class RequestImport():
 
     def prep_external_repo (self, url, branch):
 
-        git = GitAPI(url, self.github_token)
-        git.info()
-        git.checkout(branch)
-        return git
+        try:
+            git = GitAPI(url, self.github_token)
+            git.info()
+            git.checkout(branch)
+            return git
+        except BaseException as ex:
+            err = str(ex).replace('oauth2', "*****").replace(self.github_token, "*****")
+            log.info('{0:30} {1}'.format('prep_external_repo', err))
+            raise Exception("There was a problem accessing %s at %s.  Please check there is access, repo and branch exists. (%s)" % (branch, url, err))
 
     def init_pri_branch (self, repoName, branch):
         glapi = GitlabAPI(self.projectsc_host, self.projectsc_token)
