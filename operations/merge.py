@@ -30,6 +30,9 @@ class Merge():
                 if pipelines[0]['status'] == 'success':
                     log.info('{0:30} Attempt # {1}. Scan passed. Success!'.format('wait_for_mr_ready', attempt))
                     return True
+                if pipelines[0]['status'] == 'failed':
+                    log.info('{0:30} Attempt # {1}. Scan failed.'.format('wait_for_mr_ready', attempt))
+                    return False
                 log.info('{0:30} Attempt # {1}. Sleep and try again ({2}).'.format('wait_for_mr_ready', attempt, pipelines[0]['status']))
             else:
                 log.info('{0:30} Attempt # {1}. Sleep and try again.'.format('wait_for_mr_ready', attempt))
