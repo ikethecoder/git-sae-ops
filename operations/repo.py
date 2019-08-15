@@ -1,4 +1,4 @@
-
+import os
 import gitlab
 
 class RepoOp():
@@ -65,6 +65,8 @@ class RepoOp():
         glapi.set_default_branch(sharedGroup, repoName, "develop")
         glapi.unprotect_branch(glrepo, "develop")
         glapi.delete_branch(glrepo, "master")
+
+        glapi.add_file(glrepo, 'develop', 'LICENSE', open("%s/%s" % (os.path.dirname(os.path.abspath(__file__)), "assets/LICENSE"),"r").read())
 
 
     def do_private_repo_validation (self, glrepo, project_name):
