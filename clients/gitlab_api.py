@@ -331,6 +331,9 @@ class GitlabAPI():
         project = self.gl.projects.get(aProjectId)
         try:
             f = project.files.get(file_path=fileName, ref=branch)
+            f.content = fileContents
+            f.save(branch=branch, commit_message="Update %s" % fileName)
+
         except gitlab.exceptions.GitlabGetError as error:
             if error.response_code == 404:
                 f = project.files.create({'file_path': fileName,
