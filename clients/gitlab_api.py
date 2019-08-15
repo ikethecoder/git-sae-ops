@@ -326,7 +326,7 @@ class GitlabAPI():
         log.info('{0:30} {1} CREATED'.format('', url))
         hook = self.gl.hooks.create({'url': url, 'token': token, 'enable_ssl_verification': False, 'merge_requests_events': True, 'repository_update_events': True})
 
-    def add_file (self, aProjectId, branch, fileName, fileContents):
+    def add_file (self, aProjectId, branch, fileName, fileContents, message = None):
         log.info('{0:30} Add file:{1} in branch {2} file:{3}'.format('add_file', aProjectId, branch, fileName))
         project = self.gl.projects.get(aProjectId)
         try:
@@ -338,6 +338,6 @@ class GitlabAPI():
                                 'content': fileContents,
                                 'author_email': 'no-reply@popdata.local',
                                 'author_name': 'Automation Agent',
-                                'commit_message': 'Create file'})
+                                'commit_message': "Added %s" % fileName if (message is None) else message})
                 log.info(f)
 
