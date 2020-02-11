@@ -32,6 +32,7 @@ def create_app(test_config=None):
     Compress(app)
 
 
+
     @app.route('/hello')
     def hello():
         return 'Hello, World!'

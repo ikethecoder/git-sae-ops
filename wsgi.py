@@ -11,6 +11,7 @@ from gevent.pywsgi import WSGIServer
 # from server import app
 from timeit import default_timer as timer
 from server.app import create_app
+import server.group_setup as group_setup
 
 app = create_app()
 
@@ -66,6 +67,8 @@ def main(port: int = conf.data['apiPort']) -> object:
     # validationHeaderProcess = Validator()
     # validationHeaderProcess.start_validate_process()
 
+    group_setup.setup()
+    
     log.info('Serving on port %s', str(port))
     http.serve_forever()
     log.info('Server terminated!')

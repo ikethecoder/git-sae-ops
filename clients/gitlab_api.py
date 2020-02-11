@@ -241,6 +241,11 @@ class GitlabAPI():
                 return True
         return False
 
+    def get_project_by_id(self, aProjectId):
+        log.info('{0:30} {1}'.format('get_project_by_id', aProjectId))
+        return self.gl.projects.get(aProjectId)
+
+
     def get_project(self, aNamespaceId, aProject):
         log.info('{0:30} {1}'.format('get_project', aProject))
         projects = self.gl.projects.list(search=aProject)
@@ -248,6 +253,11 @@ class GitlabAPI():
             if project.name == aProject and project.namespace['id'] == aNamespaceId:
                 return project
         raise Exception("Project %s not found (ns=%s)" % (aProject, aNamespaceId))
+
+    def transfer(self, aProjectId, toNamespace):
+        log.info('{0:30} move project:{1} to {2}'.format('transfer', aProjectId, toNamespace))
+        grp = self.gl.groups.get(toNamespace)
+        grp.transfer_project(aProjectId)
 
     def protect_branch(self, aProjectId, branch):
         log.info('{0:30} branch:{1} for project:{2}'.format('protect_branch', branch, aProjectId))
